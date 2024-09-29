@@ -2,21 +2,6 @@ This repository contains the code for the ADC24 talk "Crunching same numbers on 
 
 # Targets
 
-
-## MIMXRT1170-EVKB
-### Hardware setup
-TODO
-
-### Software setup
-TODO
-
-### Build
-TODO
-
-### Run
-TODO
-
-
 ## ADSP-21569
 ### Hardware setup
 TODO
@@ -30,6 +15,36 @@ cd targets/adsp-21569-ezkit
 mkdir build
 cd build
 cmake -DCMAKE_SYSTEM_NAME=ADSP -DCMAKE_SYSTEM_PROCESSOR=21569 ..
+make
+```
+
+### Run
+TODO
+
+
+## MIMXRT1170-EVKB
+### Hardware setup
+TODO
+
+### Software setup
+1. Download the MCUXpresso SDK to `targets/mimxrt1170-evkb` using `west`. It will take a while.
+```
+cd targets/mimxrt1170-evkb
+west init -m https://github.com/NXPmicro/mcux-sdk --mr MCUX_2.16.000 mcuxsdk
+cd mcuxsdk
+west update
+```
+
+2. Download the [GNU Arm Embedded Toolchain](https://developer.arm.com/downloads/-/arm-gnu-toolchain-downloads) for AArch32 bare-metal target
+and unzip to a folder on your host PC (usually `/opt`). We used `arm-gnu-toolchain-13.3.rel1-x86_64-arm-none-eabi`.
+
+### Build
+```
+cd targets/mimxrt1170-evkb
+mkdir build
+cd build
+export ARMGCC_DIR=/opt/arm-gnu-toolchain-13.3.rel1-x86_64-arm-none-eabi    # Change this to your toolchain directory
+cmake -DCMAKE_BUILD_TYPE=release -DCMAKE_TOOLCHAIN_FILE="../mcuxsdk/core/tools/cmake_toolchain_files/armgcc.cmake" -G "Unix Makefiles" ..
 make
 ```
 
