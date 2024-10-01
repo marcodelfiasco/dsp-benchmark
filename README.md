@@ -7,7 +7,8 @@ This repository contains the code for the ADC24 talk "Crunching same numbers on 
 TODO
 
 ### Software setup
-TODO
+You should have a licensed copy of [Crosscore Embedded Studio](https://www.analog.com/en/resources/evaluation-hardware-and-software/software/adswt-cces.html) installed on your system.
+For Linux you need the "SHARC and Blackfin Linux Command-Line Tools" add-in installed. Please refer to the official CCES documentation for more details.
 
 ### Build
 ```
@@ -17,6 +18,15 @@ cd build
 cmake -DCMAKE_SYSTEM_NAME=ADSP -DCMAKE_SYSTEM_PROCESSOR=21569 ..
 make
 ```
+
+#### Caveats for WSL2
+If things do not work from WSL then you can try to set the following environment variables:
+```
+export ADSP_ROOT=<your-cces-install-path>
+export LD_LIBRARY_PATH=<your-cces-install-path>/System:${LD_LIBRARY_PATH}
+```
+
+It seems that the SHARC compiler running from WSL is not able to access mountpoints on `/mnt/`, so working under your local WSL home directory is recommended.
 
 ### Run
 TODO
