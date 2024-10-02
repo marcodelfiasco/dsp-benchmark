@@ -19,6 +19,8 @@ cmake -DCMAKE_SYSTEM_NAME=ADSP -DCMAKE_SYSTEM_PROCESSOR=21569 ..
 make
 ```
 
+or just use scripts in the `scripts` directory.
+
 #### Caveats for WSL2
 If things do not work from WSL then you can try to set the following environment variables:
 ```
@@ -58,6 +60,8 @@ cmake -DCMAKE_BUILD_TYPE=release -DCMAKE_TOOLCHAIN_FILE="../mcuxsdk/core/tools/c
 make
 ```
 
+or just use scripts in the `scripts` directory.
+
 ### Run
 TODO
 
@@ -82,6 +86,8 @@ source ELK_SDK_INSTALL_PATH/environment-setup-cortexa72-elk-linux
 cmake ..
 make
 ```
+
+or just use scripts in the `scripts` directory.
 
 ### Run
 TODO
