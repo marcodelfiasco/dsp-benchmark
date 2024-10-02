@@ -1,6 +1,8 @@
 set(CMAKE_SYSTEM_NAME Generic)
 cmake_minimum_required(VERSION 3.22)
 
+project(benchmark-imxrt)
+
 set(MCUXPRESSO_CMAKE_FORMAT_MAJOR_VERSION 2)
 set(MCUXPRESSO_CMAKE_FORMAT_MINOR_VERSION 0)
 
@@ -20,11 +22,12 @@ set(CMAKE_EXECUTABLE_LIBRARY_PREFIX)
 set(CMAKE_EXECUTABLE_LIBRARY_SUFFIX)
 
 set(PROJECT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+set(SOURCES_DIR ${PROJECT_DIR}/src)
+set(COMMON_SOURCES_DIR ${PROJECT_DIR}/../../src)
+
 set(MCUX_SDK_DIR "${PROJECT_DIR}/mcuxsdk")
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BUILD_TYPE})
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BUILD_TYPE})
-
-project(benchmark-imxrt)
 
 set(MCUX_BUILD_TYPES release)
 set(MCUX_SDK_PROJECT_NAME benchmark-imxrt.elf)
@@ -33,7 +36,10 @@ include(${PROJECT_DIR}/flags.cmake)
 include(${PROJECT_DIR}/config.cmake)
 
 add_executable(${MCUX_SDK_PROJECT_NAME} 
-	"${PROJECT_DIR}/src/main.c"
+	${COMMON_SOURCES_DIR}/main.c
+	${COMMON_SOURCES_DIR}/measure.c
+	${COMMON_SOURCES_DIR}/test.c
+	${SOURCES_DIR}/target.c
 	"${MCUX_SDK_DIR}/core/boards/evkbmimxrt1170/board.c"
 	"${MCUX_SDK_DIR}/core/boards/evkbmimxrt1170/board.h"
 	"${MCUX_SDK_DIR}/core/boards/evkbmimxrt1170/clock_config.c"
