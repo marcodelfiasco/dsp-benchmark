@@ -11,6 +11,7 @@ set(SOURCES
 	${COMMON_SOURCES_DIR}/measure.c
 	${COMMON_SOURCES_DIR}/test.c
 	${SOURCES_DIR}/target.c
+	${SOURCES_DIR}/tp.c
 )
 
 add_executable(benchmark-rpi4 ${SOURCES})

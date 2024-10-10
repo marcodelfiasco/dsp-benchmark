@@ -40,6 +40,7 @@ add_executable(${MCUX_SDK_PROJECT_NAME}
 	${COMMON_SOURCES_DIR}/measure.c
 	${COMMON_SOURCES_DIR}/test.c
 	${SOURCES_DIR}/target.c
+	${SOURCES_DIR}/tp.c
 	"${MCUX_SDK_DIR}/core/boards/evkbmimxrt1170/board.c"
 	"${MCUX_SDK_DIR}/core/boards/evkbmimxrt1170/board.h"
 	"${MCUX_SDK_DIR}/core/boards/evkbmimxrt1170/clock_config.c"

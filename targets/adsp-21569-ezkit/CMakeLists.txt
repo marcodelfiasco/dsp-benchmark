@@ -11,6 +11,9 @@ set(SOURCES
 	${COMMON_SOURCES_DIR}/measure.c
 	${COMMON_SOURCES_DIR}/test.c
 	${SOURCES_DIR}/target.c
+	${SOURCES_DIR}/tp.c
+	${SOURCES_DIR}/twi.c
 )
 
 add_executable(benchmark-adi ${SOURCES})
+target_include_directories(benchmark-adi PRIVATE ${COMMON_SOURCES_DIR})
