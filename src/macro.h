@@ -26,4 +26,6 @@
 #define BIT(n)          (0x1 << (n))
 #define MASK(n)         (BIT(n) - 1)
 
+#define MACH_NOP()      asm("nop;")
+
 #endif /* MACRO_H_ */
