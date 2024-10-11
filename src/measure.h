@@ -10,6 +10,7 @@ struct measure_t
 	uint64_t sum;
 	uint64_t min;
 	uint64_t max;
+	uint64_t overhead;
 };
 
 void measure_reset(struct measure_t *data);
