@@ -25,6 +25,17 @@ void target_init(void)
 
 uint64_t get_timestamp(void)
 {
-    // TODO
-    return 0;
+    return DWT->CYCCNT;
+}
+
+uint64_t timestamp_to_nsec(uint64_t timestamp)
+{
+    return (uint64_t)(0.5 +
+                      timestamp * 1.0E9 / (double)CLOCK_GetFreq(kCLOCK_CpuClk));
+}
+
+uint64_t timestamp_to_cycles(uint64_t timestamp)
+{
+    // Timestamp is already in cycles
+    return timestamp;
 }

@@ -51,12 +51,14 @@ add_executable(${MCUX_SDK_PROJECT_NAME}
 
 target_include_directories(${MCUX_SDK_PROJECT_NAME} PRIVATE
     ${MCUX_SDK_DIR}/core/boards/evkbmimxrt1170
+    ${COMMON_SOURCES_DIR}
+    ${SOURCES_DIR}
 )
 
 include(${MCUX_SDK_DIR}/core/devices/MIMXRT1176/all_lib_device.cmake)
 
 if(NOT DEFINED TARGET_LINK_SYSTEM_LIBRARIES)  
-    set(TARGET_LINK_SYSTEM_LIBRARIES "-lm -lc -lgcc -lnosys")  
+    set(TARGET_LINK_SYSTEM_LIBRARIES "-lm -lc -lgcc -lnosys")
 endif()  
 
 target_link_libraries(${MCUX_SDK_PROJECT_NAME} PRIVATE -Wl,--start-group)

@@ -3,7 +3,7 @@ IF(NOT DEFINED FPU)
 ENDIF()  
 
 IF(NOT DEFINED SPECS)  
-    SET(SPECS "--specs=nano.specs --specs=nosys.specs")  
+    SET(SPECS "--specs=nano.specs --specs=nosys.specs")
 ENDIF()  
 
 IF(NOT DEFINED DEBUG_CONSOLE_CONFIG)  
