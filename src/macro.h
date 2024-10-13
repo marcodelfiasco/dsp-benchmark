@@ -26,7 +26,12 @@
 #define BIT(n) (0x1 << (n))
 #define MASK(n) (BIT(n) - 1)
 
+#ifdef CPU_MIMXRT1176DVMAA_cm7
+#define MACH_NOP() asm("nop; nop;") // CM7 has dual issue capability enabled
+#else
 #define MACH_NOP() asm("nop;")
+#endif
+
 #define NOP_10()    \
     do              \
     {               \

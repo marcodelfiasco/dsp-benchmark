@@ -4,6 +4,14 @@
 #include <stdio.h>
 #include <stdint.h>
 
-#define log_msg(fmt...) printf(fmt)
+#ifdef MCUXPRESSO_SDK
+#include "fsl_debug_console.h"
+#endif
+
+#ifndef PRINTF
+#define PRINTF printf
+#endif
+
+#define log_msg(fmt...) PRINTF(fmt)
 
 #endif // LOG_H_
