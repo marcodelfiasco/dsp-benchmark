@@ -4,6 +4,6 @@
 #include <stdio.h>
 #include <stdint.h>
 
-#define log_msg(fmt...)	printf(fmt)
+#define log_msg(fmt...) printf(fmt)
 
 #endif // LOG_H_

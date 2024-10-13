@@ -21,7 +21,7 @@ void target_init(void)
     uint32_t core_clock_freq;
     pwr_result = adi_pwr_GetCoreClkFreq(0u, &core_clock_freq);
     ASSERT(pwr_result == ADI_PWR_SUCCESS);
-    ASSERT(core_clock_freq == 1000000000);  // We should be running at 1GHz
+    ASSERT(core_clock_freq == 1000000000); // We should be running at 1GHz
 }
 
 uint64_t get_timestamp(void)

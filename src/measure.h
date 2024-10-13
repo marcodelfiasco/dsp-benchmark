@@ -5,12 +5,12 @@
 
 struct measure_t
 {
-	uint64_t start;
-	uint64_t count;
-	uint64_t sum;
-	uint64_t min;
-	uint64_t max;
-	uint64_t overhead;
+    uint64_t start;
+    uint64_t count;
+    uint64_t sum;
+    uint64_t min;
+    uint64_t max;
+    uint64_t overhead;
 };
 
 void measure_reset(struct measure_t *data);

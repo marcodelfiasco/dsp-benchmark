@@ -12,11 +12,11 @@
  */
 
 /* TP1: FLG3 - PB_02 */
-#define FLG2_PIN        3
-#define FLG3_PIN        2
+#define FLG2_PIN 3
+#define FLG3_PIN 2
 
-#define MUX_C0_FLG2     1
-#define MUX_C0_FLG3     1
+#define MUX_C0_FLG2 1
+#define MUX_C0_FLG3 1
 
 void tp_init(void)
 {

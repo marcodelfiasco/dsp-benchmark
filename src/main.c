@@ -8,9 +8,9 @@ extern void target_init();
 
 void main(void)
 {
-	target_init();
+    target_init();
 
-	log_msg("Hello World\n");
+    log_msg("Hello World\n");
 
-	test_measure();
+    test_measure();
 }

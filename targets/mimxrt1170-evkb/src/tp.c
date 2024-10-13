@@ -4,15 +4,15 @@
 #include "fsl_gpio.h"
 
 /* GPIO probes: PROBE_0 = Green LED, PROBE_1 = Red LED*/
-#define PROBE_0_GPIO        GPIO9
-#define PROBE_0_GPIO_PIN    (3U)
-#define PROBE_0_OFF_VALUE   (0U)
-#define PROBE_0_ON_VALUE    (1U)
+#define PROBE_0_GPIO GPIO9
+#define PROBE_0_GPIO_PIN (3U)
+#define PROBE_0_OFF_VALUE (0U)
+#define PROBE_0_ON_VALUE (1U)
 
-#define PROBE_1_GPIO        GPIO9
-#define PROBE_1_GPIO_PIN    (25U)
-#define PROBE_1_OFF_VALUE   (0U)
-#define PROBE_1_ON_VALUE    (1U)
+#define PROBE_1_GPIO GPIO9
+#define PROBE_1_GPIO_PIN (25U)
+#define PROBE_1_OFF_VALUE (0U)
+#define PROBE_1_ON_VALUE (1U)
 
 void tp_init(void)
 {
