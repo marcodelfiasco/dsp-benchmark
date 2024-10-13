@@ -20,7 +20,10 @@ void test_measure(void)
     tp0_clr();
 
     log_msg("100 NOP loop:\n");
-    log_msg("min: %ld nsec\n", (long int)measure_get_min(&meas));
-    log_msg("max: %ld nsec\n", (long int)measure_get_max(&meas));
-    log_msg("avg: %ld nsec\n", (long int)measure_get_avg(&meas));
+    log_msg("min: %5u cyc - %5u nsec\n", measure_get_min_cycles(&meas),
+            measure_get_min_nsec(&meas));
+    log_msg("max: %5u cyc - %5u nsec\n", measure_get_max_cycles(&meas),
+            measure_get_max_nsec(&meas));
+    log_msg("avg: %5u cyc - %5u nsec\n", measure_get_avg_cycles(&meas),
+            measure_get_avg_nsec(&meas));
 }

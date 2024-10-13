@@ -5,6 +5,8 @@
 #include <limits.h>
 
 extern uint64_t get_timestamp(void);
+uint64_t timestamp_to_nsec(uint64_t timestamp);
+uint64_t timestamp_to_cycles(uint64_t timestamp);
 
 static void _reset(struct measure_t *data, uint64_t overhead)
 {
@@ -27,7 +29,7 @@ void measure_reset(struct measure_t *data)
         measure_start(data);
         measure_stop(data);
     }
-    overhead = measure_get_avg(data);
+    overhead = data->sum / data->count;
     _reset(data, overhead);
 }
 
@@ -67,19 +69,34 @@ void measure_stop(struct measure_t *data)
     }
 }
 
-uint64_t measure_get_min(struct measure_t *data)
+uint32_t measure_get_min_cycles(struct measure_t *data)
 {
-    return data->min;
+    return timestamp_to_cycles(data->min);
 }
 
-uint64_t measure_get_max(struct measure_t *data)
+uint32_t measure_get_max_cycles(struct measure_t *data)
 {
-    return data->max;
+    return timestamp_to_cycles(data->max);
 }
 
-uint64_t measure_get_avg(struct measure_t *data)
+uint32_t measure_get_avg_cycles(struct measure_t *data)
 {
-    return data->sum / data->count;
+    return timestamp_to_cycles(data->sum / data->count);
+}
+
+uint32_t measure_get_min_nsec(struct measure_t *data)
+{
+    return timestamp_to_nsec(data->min);
+}
+
+uint32_t measure_get_max_nsec(struct measure_t *data)
+{
+    return timestamp_to_nsec(data->max);
+}
+
+uint32_t measure_get_avg_nsec(struct measure_t *data)
+{
+    return timestamp_to_nsec(data->sum / data->count);
 }
 
 uint64_t measure_get_count(struct measure_t *data)

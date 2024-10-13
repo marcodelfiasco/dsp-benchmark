@@ -28,3 +28,15 @@ uint64_t get_timestamp(void)
 {
     return __builtin_emuclk();
 }
+
+uint64_t timestamp_to_nsec(uint64_t timestamp)
+{
+    // We are running at 1GHz, so 1 cycle = 1 nsec
+    return timestamp;
+}
+
+uint64_t timestamp_to_cycles(uint64_t timestamp)
+{
+    // Timestamp is already in cycles
+    return timestamp;
+}
