@@ -8,5 +8,5 @@ cd targets/rpi4
 mkdir build &> /dev/null || true
 cd build
 source ${ELK_SDK_DIR}/environment-setup-cortexa72-elk-linux
-cmake ..
+cmake -DCMAKE_BUILD_TYPE=Release ..
 make

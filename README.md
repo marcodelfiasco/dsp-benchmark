@@ -69,8 +69,27 @@ TODO
 ## Raspberry Pi 4
 On this target we will use [ELK Audio OS](https://www.elk.audio/).
 
-### Hardware setup
+Currently the software will not use any specific EVL realtime service, but we are running single threaded on an isolated CPU.
+Running on an isolated CPU will limit the interaction with threads running on other cores.
+
+### Board setup
 You can follow the ELK official documentation on https://elk-audio.github.io/elk-docs/html/intro/getting_started_with_raspberry.html.
+After the official ELK setup is done we need to:
+1. Disable automatic run of sushi.
+2. Set the CPU frequency to 1.5GHz.
+
+#### Disable sushi
+Login to the board using ssh and run `sudo systemctl disable sushi`.
+
+#### Set CPU frequency to 1.5GHz
+WARNING: Running at 1.5GHz normally requires an heatsink. Do this at your own risk.
+
+Login to the board using ssh and:
+* run `sudo mount /dev/mmcblk0p1 /mnt/`
+* run `sudo vim /mnt/config.txt`
+* change `arm_freq=1200` to `arm_freq=1500`
+* save and exit
+* run `sync && sudo reboot`
 
 ### Software setup
 You need to install the ELK Audio OS 1.0.0 SDK first.
@@ -83,7 +102,7 @@ cd targets/rpi4
 mkdir build
 cd build
 source ELK_SDK_INSTALL_PATH/environment-setup-cortexa72-elk-linux
-cmake ..
+cmake -DCMAKE_BUILD_TYPE=Release ..
 make
 ```
 

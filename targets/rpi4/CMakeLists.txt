@@ -14,4 +14,11 @@ set(SOURCES
 	${SOURCES_DIR}/tp.c
 )
 
+set(INCLUDES
+	${COMMON_SOURCES_DIR}
+	${SOURCES_DIR}
+)
+
 add_executable(benchmark-rpi4 ${SOURCES})
+target_link_libraries(benchmark-rpi4 PRIVATE "-levl")
+target_include_directories(benchmark-rpi4 PRIVATE ${INCLUDES})
