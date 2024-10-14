@@ -12,5 +12,6 @@ void main(void)
 
     log_msg("Hello World\n");
 
-    test_measure();
+    test_nop_100();
+    test_nop_1000();
 }
