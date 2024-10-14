@@ -61,4 +61,10 @@
         NOP_10(); \
     } while (0)
 
+#ifdef CPU_MIMXRT1176DVMAA_cm7
+#define TEST_CONST_SECTION __attribute__((section("NonCacheable")))
+#else
+#define TEST_CONST_SECTION
+#endif
+
 #endif /* MACRO_H_ */
