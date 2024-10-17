@@ -59,7 +59,7 @@ SET(CMAKE_C_FLAGS_RELEASE " \
     -DNDEBUG \
     -DCPU_MIMXRT1176DVMAA_cm7 \
     -DMCUXPRESSO_SDK \
-    -Os \
+    -Ofast \
     -mcpu=cortex-m7 \
     -Wall \
     -mthumb \
@@ -103,7 +103,7 @@ SET(CMAKE_CXX_FLAGS_RELEASE " \
     -DNDEBUG \
     -DCPU_MIMXRT1176DVMAA_cm7 \
     -DMCUXPRESSO_SDK \
-    -Os \
+    -Ofast \
     -mcpu=cortex-m7 \
     -Wall \
     -mthumb \

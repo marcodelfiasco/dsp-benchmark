@@ -22,4 +22,5 @@ set(INCLUDES
 
 add_executable(benchmark-rpi4 ${SOURCES})
 target_link_libraries(benchmark-rpi4 PRIVATE "-levl")
+target_link_options(benchmark-rpi4 PRIVATE "-Ofast")
 target_include_directories(benchmark-rpi4 PRIVATE ${INCLUDES})
