@@ -3,30 +3,27 @@
 #ifndef FIR_BASIC_H_
 #define FIR_BASIC_H_
 
-#include <stdbool.h>
 #include <string.h>
+#include "fir_common.h"
+#include "mem.h"
 #include "utils.h"
 
 struct fir_basic_t
 {
     float *coeff; // FIR coefficients (length is 'size' floats)
-    float *state; // FIR state (length is 'size' floats)
+    float *state; // FIR state (length is 'size + buffer_size' floats)
     int size; // FIR size (i.e. number of coefficients)
 };
 
-static void fir_basic_init(struct fir_basic_t *fir, float *coeff, float *state,
-                           int size)
+static void fir_basic_init(struct fir_basic_t *fir, const float *coeff,
+                           int fir_size, int buffer_size)
 {
-    fir->coeff = coeff;
-    fir->state = state;
-    fir->size = size;
+    fir->coeff = mem_alloc(DDR, fir_size * sizeof(float));
+    fir->state = mem_alloc(DDR, (fir_size + buffer_size) * sizeof(float));
+    fir->size = fir_size;
 
-    clear_float_buffer(fir->state, size);
-}
-
-static void fir_basic_set_coeff(struct fir_basic_t *fir, const float *coeff)
-{
-    copy_float_buffer(coeff, fir->coeff, fir->size);
+    copy_float_buffer(coeff, fir->coeff, fir_size);
+    clear_float_buffer(fir->state, fir_size + buffer_size);
 }
 
 static void fir_basic_run(const struct fir_basic_t *fir, const float *input,
@@ -50,7 +47,7 @@ static void fir_basic_run(const struct fir_basic_t *fir, const float *input,
     memmove(&state[0], &state[buffer_size], (fir_size - 1) * sizeof(float));
 }
 
-static void fir_basic_restrict_run(const struct fir_basic_t *fir,
+static void fir_basic_run_restrict(const struct fir_basic_t *fir,
                                    const float *restrict input,
                                    float *restrict output, int buffer_size)
 {

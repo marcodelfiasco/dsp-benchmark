@@ -3,20 +3,26 @@
 #include "log.h"
 #include "macro.h"
 #include "measure.h"
+#include "mem.h"
 #include "tp.h"
+#include "utils.h"
 #include "test_vectors.h"
-#include "fir_basic.h"
-#include "fir_circular.h"
+#if defined(__ADSPSHARC__)
+#include "adsp/fir_basic.h"
+#include "adsp/fir_circular.h"
+#elif defined(CPU_MIMXRT1176DVMAA_cm7)
+#include "imxrt/fir_basic.h"
+#include "imxrt/fir_circular.h"
+#else
+#include "rpi/fir_basic.h"
+#include "rpi/fir_circular.h"
+#endif
 
 #define MAX_INPUT_LEN 8192
 #define MAX_OUTPUT_LEN 8192
-#define MAX_COEFF_LEN 4096
-#define MAX_STATE_LEN (4096 + 128)
-static float _test_input_buffer[MAX_INPUT_LEN];
-static float _test_output_buffer[MAX_OUTPUT_LEN];
-static float _fir_coeffs[MAX_COEFF_LEN];
-static float _fir_state[MAX_STATE_LEN];
-static int _test_buffer_size[] = { 8, 16, 32, 64 };
+static AUDIO_BUFFER_SECTION float _test_input_buffer[MAX_INPUT_LEN];
+static AUDIO_BUFFER_SECTION float _test_output_buffer[MAX_OUTPUT_LEN];
+static int _test_buffer_size[] = { 8, 16, 32, 64, 128 };
 static const float _error_threshold = 6.5E-6;
 static struct
 {
@@ -63,7 +69,7 @@ static void _print_test_results(void)
 #undef ZERO_IF_FAILED
 }
 
-static void TEST_BEGIN(const char *name, int fir_size, int buffer_size)
+static void _test_begin(const char *name, int fir_size, int buffer_size)
 {
     snprintf(_test_data.name, sizeof(_test_data.name), "%s", name);
     _test_data.failed = false;
@@ -76,130 +82,183 @@ static void TEST_BEGIN(const char *name, int fir_size, int buffer_size)
     clear_float_buffer(_test_output_buffer, MAX_OUTPUT_LEN);
     ASSERT(get_input_length() <= MAX_INPUT_LEN);
     copy_float_buffer(get_input(), _test_input_buffer, get_input_length());
+
+    mem_free_all();
 }
 
-static void TEST_END()
+static void _test_end()
 {
     _print_test_results();
 }
 
-static void TEST_FAILED()
+static void _test_failed()
 {
     _test_data.failed = true;
 }
 
-void test_init(void)
+static void _test_nop_100(void)
 {
+    _test_begin("100 NOP", 0, 0);
+
+    tp0_set();
+    for (int loop = 0; loop < 1000; loop++)
+    {
+        tp1_set();
+        measure_start(&_test_data.meas);
+        NOP_100();
+        measure_stop(&_test_data.meas);
+        tp1_clr();
+    }
+    tp0_clr();
+
+    _test_end();
+}
+
+static void _test_nop_1000(void)
+{
+    _test_begin("1000 NOP", 0, 0);
+
+    tp0_set();
+    for (int loop = 0; loop < 1000; loop++)
+    {
+        tp1_set();
+        measure_start(&_test_data.meas);
+        NOP_100();
+        NOP_100();
+        NOP_100();
+        NOP_100();
+        NOP_100();
+        NOP_100();
+        NOP_100();
+        NOP_100();
+        NOP_100();
+        NOP_100();
+        measure_stop(&_test_data.meas);
+        tp1_clr();
+    }
+    tp0_clr();
+
+    _test_end();
+}
+
+#define FIR_RUNNER(name, fir_data_t, init_func, run_func)                      \
+    {                                                                          \
+        int buffer_size = _test_buffer_size[bsize_idx];                        \
+        const float *input = _test_input_buffer;                               \
+        float *output = _test_output_buffer;                                   \
+        fir_data_t fir_data;                                                   \
+                                                                               \
+        _test_begin(name, get_fir_length(fir_idx), buffer_size);               \
+        init_func(&fir_data, get_fir_coeffs(fir_idx), get_fir_length(fir_idx), \
+                  buffer_size);                                                \
+        for (int processed = 0; processed < get_input_length();                \
+             processed += buffer_size)                                         \
+        {                                                                      \
+            measure_start(&_test_data.meas);                                   \
+            run_func(&fir_data, input, output, buffer_size);                   \
+            measure_stop(&_test_data.meas);                                    \
+            input += buffer_size;                                              \
+            output += buffer_size;                                             \
+        }                                                                      \
+                                                                               \
+        if (!compare_float_buffer(_test_output_buffer, get_output(fir_idx),    \
+                                  get_output_length(fir_idx),                  \
+                                  _error_threshold, &_test_data.max_error))    \
+        {                                                                      \
+            _test_failed();                                                    \
+        }                                                                      \
+        _test_end();                                                           \
+    }
+
+static void _test_fir(void)
+{
+    int fir_idx = get_num_fir() / 2;
+    int bsize_idx = ARRAYSIZE(_test_buffer_size) / 2;
+
+    // clang-format off
+#if defined(__ADSPSHARC__)
+    FIR_RUNNER("FIR.basic", struct fir_basic_t,
+                fir_basic_init,
+                fir_basic_run);
+    FIR_RUNNER("FIR.basic_restrict", struct fir_basic_t,
+                fir_basic_init,
+                fir_basic_run_restrict);
+    FIR_RUNNER("FIR.basic_dual_bank", struct fir_basic_t,
+                fir_basic_init_dual_bank,
+                fir_basic_run_dual_bank);
+    FIR_RUNNER("FIR.basic_aligned", struct fir_basic_t,
+                fir_basic_init_dual_bank,
+                fir_basic_run_dual_bank_aligned);
+    FIR_RUNNER("FIR.basic_loop_cnt", struct fir_basic_t,
+                fir_basic_init_dual_bank,
+                fir_basic_run_dual_bank_aligned_loop_count);
+
+    FIR_RUNNER("FIR.circular", struct fir_circular_t,
+                fir_circular_init,
+                fir_circular_run);
+    FIR_RUNNER("FIR.circular_restrict", struct fir_circular_t,
+                fir_circular_init,
+                fir_circular_run_restrict);
+    FIR_RUNNER("FIR.circular_dual_bank", struct fir_circular_t,
+                fir_circular_init_dual_bank,
+                fir_circular_run_dual_bank);
+    FIR_RUNNER("FIR.circular_aligned", struct fir_circular_t,
+                fir_circular_init_dual_bank,
+                fir_circular_run_dual_bank_aligned);
+    FIR_RUNNER("FIR.circular_loop_cnt", struct fir_circular_t,
+                fir_circular_init_dual_bank,
+                fir_circular_run_dual_bank_aligned_loop_count);
+#elif defined(CPU_MIMXRT1176DVMAA_cm7)
+    FIR_RUNNER("FIR.basic_ddr", struct fir_basic_t,
+                fir_basic_init_ddr,
+                fir_basic_run);
+    FIR_RUNNER("FIR.basic_ddr_restrict", struct fir_basic_t,
+                fir_basic_init_ddr,
+                fir_basic_run_restrict);
+    FIR_RUNNER("FIR.basic_tcm", struct fir_basic_t,
+                fir_basic_init_tcm,
+                fir_basic_run);
+    FIR_RUNNER("FIR.basic_tcm_restrict", struct fir_basic_t,
+                fir_basic_init_tcm,
+                fir_basic_run_restrict);
+
+    FIR_RUNNER("FIR.circular_ddr", struct fir_circular_t,
+                fir_circular_init_ddr,
+                fir_circular_run);
+    FIR_RUNNER("FIR.circular_ddr_restrict", struct fir_circular_t,
+                fir_circular_init_ddr,
+                fir_circular_run_restrict);
+    FIR_RUNNER("FIR.circular_tcm", struct fir_circular_t,
+                fir_circular_init_tcm,
+                fir_circular_run);
+    FIR_RUNNER("FIR.circular_tcm_restrict", struct fir_circular_t,
+                fir_circular_init_tcm,
+                fir_circular_run_restrict);
+#else
+    FIR_RUNNER("FIR.basic", struct fir_basic_t,
+                fir_basic_init,
+                fir_basic_run);
+    FIR_RUNNER("FIR.basic_restrict", struct fir_basic_t,
+                fir_basic_init,
+                fir_basic_run_restrict);
+
+    FIR_RUNNER("FIR.circular", struct fir_circular_t,
+                fir_circular_init,
+                fir_circular_run);
+    FIR_RUNNER("FIR.circular_restrict", struct fir_circular_t,
+                fir_circular_init,
+                fir_circular_run_restrict);
+#endif
+    // clang-format on
+}
+void test_run(void)
+{
+    log_msg("Executing tests\n");
+
     _print_test_result_header();
-}
 
-void test_nop_100(void)
-{
-    TEST_BEGIN("100 NOP", 0, 0);
+    _test_nop_100();
+    _test_nop_1000();
 
-    tp0_set();
-    for (int loop = 0; loop < 1000; loop++)
-    {
-        tp1_set();
-        measure_start(&_test_data.meas);
-        NOP_100();
-        measure_stop(&_test_data.meas);
-        tp1_clr();
-    }
-    tp0_clr();
-
-    TEST_END();
-}
-
-void test_nop_1000(void)
-{
-    TEST_BEGIN("1000 NOP", 0, 0);
-
-    tp0_set();
-    for (int loop = 0; loop < 1000; loop++)
-    {
-        tp1_set();
-        measure_start(&_test_data.meas);
-        NOP_100();
-        NOP_100();
-        NOP_100();
-        NOP_100();
-        NOP_100();
-        NOP_100();
-        NOP_100();
-        NOP_100();
-        NOP_100();
-        NOP_100();
-        measure_stop(&_test_data.meas);
-        tp1_clr();
-    }
-    tp0_clr();
-
-    TEST_END();
-}
-
-#define FIR_RUNNER(name, fir_data_t, init_func, set_coeff_func, run_func)   \
-    {                                                                       \
-        int buffer_size = _test_buffer_size[bsize_idx];                     \
-        const float *input = _test_input_buffer;                            \
-        float *output = _test_output_buffer;                                \
-        fir_data_t fir_data;                                                \
-                                                                            \
-        TEST_BEGIN(name, get_fir_length(fir_idx), buffer_size);             \
-        ASSERT(get_fir_length(fir_idx) <= MAX_COEFF_LEN);                   \
-                                                                            \
-        init_func(&fir_data, _fir_coeffs, _fir_state,                       \
-                  get_fir_length(fir_idx));                                 \
-        set_coeff_func(&fir_data, get_fir_coeffs(fir_idx));                 \
-        for (int processed = 0; processed < get_input_length();             \
-             processed += buffer_size)                                      \
-        {                                                                   \
-            measure_start(&_test_data.meas);                                \
-            run_func(&fir_data, input, output, buffer_size);                \
-            measure_stop(&_test_data.meas);                                 \
-            input += buffer_size;                                           \
-            output += buffer_size;                                          \
-        }                                                                   \
-                                                                            \
-        if (!compare_float_buffer(_test_output_buffer, get_output(fir_idx), \
-                                  get_output_length(fir_idx),               \
-                                  _error_threshold, &_test_data.max_error)) \
-        {                                                                   \
-            TEST_FAILED();                                                  \
-        }                                                                   \
-        TEST_END();                                                         \
-    }
-
-void test_fir_basic(void)
-{
-    int fir_idx, bsize_idx;
-
-    for (fir_idx = 0; fir_idx < get_num_fir(); fir_idx++)
-    {
-        for (bsize_idx = 0; bsize_idx < ARRAYSIZE(_test_buffer_size);
-             bsize_idx++)
-        {
-            FIR_RUNNER("FIR.b", struct fir_basic_t, fir_basic_init,
-                       fir_basic_set_coeff, fir_basic_run);
-            FIR_RUNNER("FIR.br", struct fir_basic_t, fir_basic_init,
-                       fir_basic_set_coeff, fir_basic_restrict_run);
-        }
-    }
-}
-
-void test_fir_circular(void)
-{
-    int fir_idx, bsize_idx;
-
-    for (fir_idx = 0; fir_idx < get_num_fir(); fir_idx++)
-    {
-        for (bsize_idx = 0; bsize_idx < ARRAYSIZE(_test_buffer_size);
-             bsize_idx++)
-        {
-            FIR_RUNNER("FIR.c", struct fir_circular_t, fir_circular_init,
-                       fir_circular_set_coeff, fir_circular_run);
-            FIR_RUNNER("FIR.cr", struct fir_circular_t, fir_circular_init,
-                       fir_circular_set_coeff, fir_circular_restrict_run);
-        }
-    }
+    _test_fir();
 }

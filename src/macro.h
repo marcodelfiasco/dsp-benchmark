@@ -61,9 +61,14 @@
         NOP_10(); \
     } while (0)
 
-#ifdef CPU_MIMXRT1176DVMAA_cm7
+#if defined(__ADSPSHARC__)
+#define AUDIO_BUFFER_SECTION dm
+#define TEST_CONST_SECTION
+#elif defined(CPU_MIMXRT1176DVMAA_cm7)
+#define AUDIO_BUFFER_SECTION __attribute__((section("DataQuickAccess")))
 #define TEST_CONST_SECTION __attribute__((section("NonCacheable")))
 #else
+#define AUDIO_BUFFER_SECTION
 #define TEST_CONST_SECTION
 #endif
 

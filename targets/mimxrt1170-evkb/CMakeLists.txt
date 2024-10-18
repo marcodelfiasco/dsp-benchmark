@@ -38,6 +38,7 @@ include(${PROJECT_DIR}/config.cmake)
 add_executable(${MCUX_SDK_PROJECT_NAME} 
 	${COMMON_SOURCES_DIR}/main.c
 	${COMMON_SOURCES_DIR}/measure.c
+	${COMMON_SOURCES_DIR}/mem.c
 	${COMMON_SOURCES_DIR}/test.c
 	${COMMON_SOURCES_DIR}/test_vectors.c
 	${SOURCES_DIR}/target.c

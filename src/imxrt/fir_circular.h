@@ -3,8 +3,8 @@
 #ifndef FIR_CIRCULAR_H_
 #define FIR_CIRCULAR_H_
 
-#include <stdbool.h>
-#include <string.h>
+#include "fir_common.h"
+#include "mem.h"
 #include "utils.h"
 
 struct fir_circular_t
@@ -15,21 +15,30 @@ struct fir_circular_t
     int pos; // State memory position
 };
 
-static void fir_circular_init(struct fir_circular_t *fir, float *coeff,
-                              float *state, int size)
+static void fir_circular_init_ddr(struct fir_circular_t *fir,
+                                  const float *coeff, int fir_size,
+                                  int buffer_size)
 {
-    fir->coeff = coeff;
-    fir->state = state;
-    fir->size = size;
+    fir->coeff = mem_alloc(DDR, fir_size * sizeof(float));
+    fir->state = mem_alloc(DDR, fir_size * sizeof(float));
+    fir->size = fir_size;
     fir->pos = 0;
 
-    clear_float_buffer(fir->state, size);
+    reverse_float_buffer(coeff, fir->coeff, fir_size);
+    clear_float_buffer(fir->state, fir_size);
 }
 
-static void fir_circular_set_coeff(struct fir_circular_t *fir,
-                                   const float *coeff)
+static void fir_circular_init_tcm(struct fir_circular_t *fir,
+                                  const float *coeff, int fir_size,
+                                  int buffer_size)
 {
-    reverse_float_buffer(coeff, fir->coeff, fir->size);
+    fir->coeff = mem_alloc(TCM, fir_size * sizeof(float));
+    fir->state = mem_alloc(TCM, fir_size * sizeof(float));
+    fir->size = fir_size;
+    fir->pos = 0;
+
+    reverse_float_buffer(coeff, fir->coeff, fir_size);
+    clear_float_buffer(fir->state, fir_size);
 }
 
 static void fir_circular_run(struct fir_circular_t *fir, const float *input,
@@ -57,7 +66,7 @@ static void fir_circular_run(struct fir_circular_t *fir, const float *input,
     fir->pos = pos;
 }
 
-static void fir_circular_restrict_run(struct fir_circular_t *fir,
+static void fir_circular_run_restrict(struct fir_circular_t *fir,
                                       const float *restrict input,
                                       float *restrict output, int buffer_size)
 {

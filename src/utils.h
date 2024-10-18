@@ -1,6 +1,8 @@
 #ifndef UTILS_H_
 #define UTILS_H_
 
+#include <stdbool.h>
+
 static void clear_float_buffer(float *buffer, int size)
 {
     for (int i = 0; i < size; i++)
