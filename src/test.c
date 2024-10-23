@@ -196,18 +196,9 @@ static void _test_fir(void)
     FIR_RUNNER("FIR.circular", struct fir_circular_t,
                 fir_circular_init,
                 fir_circular_run);
-    FIR_RUNNER("FIR.circular_restrict", struct fir_circular_t,
-                fir_circular_init,
-                fir_circular_run_restrict);
-    FIR_RUNNER("FIR.circular_dual_bank", struct fir_circular_t,
+    FIR_RUNNER("FIR.circular_opt", struct fir_circular_t,
                 fir_circular_init_dual_bank,
-                fir_circular_run_dual_bank);
-    FIR_RUNNER("FIR.circular_aligned", struct fir_circular_t,
-                fir_circular_init_dual_bank,
-                fir_circular_run_dual_bank_aligned);
-    FIR_RUNNER("FIR.circular_loop_cnt", struct fir_circular_t,
-                fir_circular_init_dual_bank,
-                fir_circular_run_dual_bank_aligned_loop_count);
+                fir_circular_run_optimized);
 #elif defined(CPU_MIMXRT1176DVMAA_cm7)
     FIR_RUNNER("FIR.basic_ddr", struct fir_basic_t,
                 fir_basic_init_ddr,

@@ -25,6 +25,6 @@ set(INCLUDES
 )
 
 add_executable(benchmark-adi ${SOURCES})
-target_compile_options(benchmark-adi PRIVATE -si-revision 0.0 -short-word-code -char-size-8 -save-temps -O1 -Ov 100 -Oa -always-inline)
+target_compile_options(benchmark-adi PRIVATE -si-revision 0.0 -short-word-code -char-size-8 -save-temps -O1 -Ov 100 -Oa -always-inline -force-circbuf)
 target_link_options(benchmark-adi PRIVATE -si-revision 0.0 -T${SOURCES_DIR}/linker.ldf -LCMakeFiles/benchmark-adi.dir/src -no-mem -map map.xml -flags-link -e -flags-link)
 target_include_directories(benchmark-adi PRIVATE ${INCLUDES})

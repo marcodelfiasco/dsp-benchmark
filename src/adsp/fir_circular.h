@@ -1,4 +1,4 @@
-// Basic FIR implementation
+// Circular FIR implementation
 
 #ifndef FIR_CIRCULAR_H_
 #define FIR_CIRCULAR_H_
@@ -65,90 +65,9 @@ static void fir_circular_run(struct fir_circular_t *fir, const float *input,
     fir->pos = pos;
 }
 
-static void fir_circular_run_restrict(struct fir_circular_t *fir,
-                                      const float *restrict input,
-                                      float *restrict output, int buffer_size)
-{
-    float *restrict coeff = fir->coeff;
-    float *restrict state = fir->state;
-    int fir_size = fir->size;
-    int pos = fir->pos;
-
-    for (int i = 0; i < buffer_size; i++)
-    {
-        state[pos++] = *input++;
-        pos = pos % fir_size;
-
-        float sum = 0;
-        int taps_pos = pos;
-        for (int j = 0; j < fir_size; j++)
-        {
-            sum += coeff[j] * state[taps_pos++];
-            taps_pos %= fir_size;
-        }
-        *output++ = sum;
-    }
-    fir->pos = pos;
-}
-
-static void fir_circular_run_dual_bank(struct fir_circular_t *fir,
+static void fir_circular_run_optimized(struct fir_circular_t *fir,
                                        const float *restrict input,
                                        float *restrict output, int buffer_size)
-{
-    pm float *restrict coeff = (pm float *)fir->coeff;
-    dm float *restrict state = (dm float *)fir->state;
-    int fir_size = fir->size;
-    int pos = fir->pos;
-
-    for (int i = 0; i < buffer_size; i++)
-    {
-        state[pos++] = *input++;
-        pos = pos % fir_size;
-
-        float sum = 0;
-        int taps_pos = pos;
-        for (int j = 0; j < fir_size; j++)
-        {
-            sum += coeff[j] * state[taps_pos++];
-            taps_pos %= fir_size;
-        }
-        *output++ = sum;
-    }
-    fir->pos = pos;
-}
-
-static void fir_circular_run_dual_bank_aligned(struct fir_circular_t *fir,
-                                               const float *restrict input,
-                                               float *restrict output,
-                                               int buffer_size)
-{
-    pm float *restrict coeff = (pm float *)fir->coeff;
-    dm float *restrict state = (dm float *)fir->state;
-    int fir_size = fir->size;
-    int pos = fir->pos;
-
-#pragma all_aligned
-    for (int i = 0; i < buffer_size; i++)
-    {
-        state[pos++] = *input++;
-        pos = pos % fir_size;
-
-        float sum = 0;
-        int taps_pos = pos;
-#pragma all_aligned
-        for (int j = 0; j < fir_size; j++)
-        {
-            sum += coeff[j] * state[taps_pos++];
-            taps_pos %= fir_size;
-        }
-        *output++ = sum;
-    }
-    fir->pos = pos;
-}
-
-static void fir_circular_run_dual_bank_aligned_loop_count(
-    struct fir_circular_t *fir, const float *restrict input,
-    float *restrict output, int buffer_size)
 {
     pm float *restrict coeff = (pm float *)fir->coeff;
     dm float *restrict state = (dm float *)fir->state;
