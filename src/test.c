@@ -237,6 +237,13 @@ static void _test_fir(void)
     FIR_RUNNER("FIR.circular_tcm_unroll", struct fir_circular_t,
                 fir_circular_init_tcm,
                 fir_circular_run_unroll);
+
+    FIR_RUNNER("FIR.cmsis_ddr", struct fir_cmsis_t,
+                fir_cmsis_init_ddr,
+                fir_cmsis_run);
+    FIR_RUNNER("FIR.cmsis_tcm", struct fir_cmsis_t,
+                fir_cmsis_init_tcm,
+                fir_cmsis_run);
 #else
     FIR_RUNNER("FIR.basic", struct fir_basic_t,
                 fir_basic_init,
