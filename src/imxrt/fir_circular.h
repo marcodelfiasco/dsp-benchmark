@@ -92,4 +92,33 @@ static void fir_circular_run_restrict(struct fir_circular_t *fir,
     fir->pos = pos;
 }
 
+static void fir_circular_run_unroll(struct fir_circular_t *fir,
+                                    const float *restrict input,
+                                    float *restrict output, int buffer_size)
+{
+    float *restrict coeff = fir->coeff;
+    float *restrict state = fir->state;
+    int fir_size = fir->size;
+    int pos = fir->pos;
+
+#pragma GCC unroll 8
+    for (int i = 0; i < buffer_size; i++)
+    {
+        state[pos++] = *input++;
+        pos = pos % fir_size;
+
+        float sum = 0;
+        int taps_pos = pos;
+
+#pragma GCC unroll 16
+        for (int j = 0; j < fir_size; j++)
+        {
+            sum += coeff[j] * state[taps_pos++];
+            taps_pos %= fir_size;
+        }
+        *output++ = sum;
+    }
+    fir->pos = pos;
+}
+
 #endif // FIR_CIRCULAR_H_

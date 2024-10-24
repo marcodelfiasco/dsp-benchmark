@@ -14,6 +14,7 @@
 #elif defined(CPU_MIMXRT1176DVMAA_cm7)
 #include "imxrt/fir_basic.h"
 #include "imxrt/fir_circular.h"
+#include "imxrt/fir_cmsis.h"
 #else
 #include "rpi/fir_basic.h"
 #include "rpi/fir_circular.h"
@@ -224,12 +225,18 @@ static void _test_fir(void)
     FIR_RUNNER("FIR.circular_ddr_restrict", struct fir_circular_t,
                 fir_circular_init_ddr,
                 fir_circular_run_restrict);
+    FIR_RUNNER("FIR.circular_ddr_unroll", struct fir_circular_t,
+                fir_circular_init_ddr,
+                fir_circular_run_unroll);
     FIR_RUNNER("FIR.circular_tcm", struct fir_circular_t,
                 fir_circular_init_tcm,
                 fir_circular_run);
     FIR_RUNNER("FIR.circular_tcm_restrict", struct fir_circular_t,
                 fir_circular_init_tcm,
                 fir_circular_run_restrict);
+    FIR_RUNNER("FIR.circular_tcm_unroll", struct fir_circular_t,
+                fir_circular_init_tcm,
+                fir_circular_run_unroll);
 #else
     FIR_RUNNER("FIR.basic", struct fir_basic_t,
                 fir_basic_init,
