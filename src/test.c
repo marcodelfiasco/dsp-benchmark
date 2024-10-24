@@ -10,6 +10,7 @@
 #if defined(__ADSPSHARC__)
 #include "adsp/fir_basic.h"
 #include "adsp/fir_circular.h"
+#include "adsp/fir_lib.h"
 #elif defined(CPU_MIMXRT1176DVMAA_cm7)
 #include "imxrt/fir_basic.h"
 #include "imxrt/fir_circular.h"
@@ -199,6 +200,10 @@ static void _test_fir(void)
     FIR_RUNNER("FIR.circular_opt", struct fir_circular_t,
                 fir_circular_init_dual_bank,
                 fir_circular_run_optimized);
+
+    FIR_RUNNER("FIR.lib", struct fir_lib_t,
+                fir_lib_init,
+                fir_lib_run);
 #elif defined(CPU_MIMXRT1176DVMAA_cm7)
     FIR_RUNNER("FIR.basic_ddr", struct fir_basic_t,
                 fir_basic_init_ddr,
