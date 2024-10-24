@@ -62,6 +62,9 @@ SET(CMAKE_C_FLAGS_RELEASE " \
     -DCPU_MIMXRT1176DVMAA_cm7 \
     -DMCUXPRESSO_SDK \
     -Ofast \
+    -fverbose-asm \
+    -save-temps=cwd \
+    -fdump-tree-vect-details \
     -mcpu=cortex-m7 \
     -Wall \
     -mthumb \
@@ -106,6 +109,9 @@ SET(CMAKE_CXX_FLAGS_RELEASE " \
     -DCPU_MIMXRT1176DVMAA_cm7 \
     -DMCUXPRESSO_SDK \
     -Ofast \
+    -fverbose-asm \
+    -save-temps=cwd \
+    -fdump-tree-vect-details \
     -mcpu=cortex-m7 \
     -Wall \
     -mthumb \
