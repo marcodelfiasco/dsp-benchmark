@@ -69,32 +69,32 @@ void measure_stop(struct measure_t *data)
     }
 }
 
-uint32_t measure_get_min_cycles(struct measure_t *data)
+uint64_t measure_get_min_cycles(struct measure_t *data)
 {
     return timestamp_to_cycles(data->min);
 }
 
-uint32_t measure_get_max_cycles(struct measure_t *data)
+uint64_t measure_get_max_cycles(struct measure_t *data)
 {
     return timestamp_to_cycles(data->max);
 }
 
-uint32_t measure_get_avg_cycles(struct measure_t *data)
+uint64_t measure_get_avg_cycles(struct measure_t *data)
 {
     return timestamp_to_cycles(data->sum / data->count);
 }
 
-uint32_t measure_get_min_nsec(struct measure_t *data)
+uint64_t measure_get_min_nsec(struct measure_t *data)
 {
     return timestamp_to_nsec(data->min);
 }
 
-uint32_t measure_get_max_nsec(struct measure_t *data)
+uint64_t measure_get_max_nsec(struct measure_t *data)
 {
     return timestamp_to_nsec(data->max);
 }
 
-uint32_t measure_get_avg_nsec(struct measure_t *data)
+uint64_t measure_get_avg_nsec(struct measure_t *data)
 {
     return timestamp_to_nsec(data->sum / data->count);
 }

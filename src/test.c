@@ -58,14 +58,19 @@ static void _print_test_results(void)
     log_msg("%u,", mac);
     log_msg("%s,", _test_data.failed ? "fail" : "OK");
     log_msg("%fe-6,", _test_data.max_error * 1E6f);
-    log_msg("%u,",
-            ZERO_IF_FAILED((unsigned int)measure_get_count(&_test_data.meas)));
-    log_msg("%u,", ZERO_IF_FAILED(measure_get_min_cycles(&_test_data.meas)));
-    log_msg("%u,", ZERO_IF_FAILED(measure_get_max_cycles(&_test_data.meas)));
-    log_msg("%u,", ZERO_IF_FAILED(measure_get_avg_cycles(&_test_data.meas)));
-    log_msg("%u,", ZERO_IF_FAILED(measure_get_min_nsec(&_test_data.meas)));
-    log_msg("%u,", ZERO_IF_FAILED(measure_get_max_nsec(&_test_data.meas)));
-    log_msg("%u,", ZERO_IF_FAILED(measure_get_avg_nsec(&_test_data.meas)));
+    log_msg("%f,", ZERO_IF_FAILED((float)measure_get_count(&_test_data.meas)));
+    log_msg("%f,",
+            ZERO_IF_FAILED((float)measure_get_min_cycles(&_test_data.meas)));
+    log_msg("%f,",
+            ZERO_IF_FAILED((float)measure_get_max_cycles(&_test_data.meas)));
+    log_msg("%f,",
+            ZERO_IF_FAILED((float)measure_get_avg_cycles(&_test_data.meas)));
+    log_msg("%f,",
+            ZERO_IF_FAILED((float)measure_get_min_nsec(&_test_data.meas)));
+    log_msg("%f,",
+            ZERO_IF_FAILED((float)measure_get_max_nsec(&_test_data.meas)));
+    log_msg("%f,",
+            ZERO_IF_FAILED((float)measure_get_avg_nsec(&_test_data.meas)));
     log_msg("%f,", ZERO_IF_FAILED((float)mac / (float)measure_get_max_cycles(
                                                    &_test_data.meas)));
     log_msg("%f,", ZERO_IF_FAILED((float)mac / (float)measure_get_min_cycles(
