@@ -186,6 +186,13 @@ SECTIONS
   text_end = ORIGIN(m_text) + LENGTH(m_text);
   ASSERT(__DATA_END <= text_end, "region m_text overflowed with text and data")
 
+  .data_noinit :
+  {
+    . = ALIGN(4);
+    *(DDRCacheNoInit)       /* quick access data section */
+    . = ALIGN(4);
+  } > m_data
+
   .qadata :
   {
     . = ALIGN(4);

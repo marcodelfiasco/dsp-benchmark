@@ -39,18 +39,23 @@ static struct
 
 static void _print_test_result_header(void)
 {
-    log_msg("name,fir_size,buffer_size,result,max_error_e6,count,"
+    log_msg("name,fir_size,buffer_size,mac,result,max_error_e6,count,"
             "min_cycles,max_cycles,avg_cycles,"
-            "min_nsec,max_nsec,avg_nsec,mac,mac_per_cycle,mac_per_nanosec\n");
+            "min_nsec,max_nsec,avg_nsec,"
+            "min_mac_per_cycle,max_mac_per_cycle,avg_mac_per_cycle,"
+            "min_mac_per_nanosec,max_mac_per_nanosec,avg_mac_per_nanosec\n");
 }
 
 static void _print_test_results(void)
 {
 #define ZERO_IF_FAILED(expr) _test_data.failed ? 0 : (expr)
 
+    unsigned int mac = _test_data.fir_size * _test_data.buffer_size;
+
     log_msg("%s,", _test_data.name);
     log_msg("%d,", _test_data.fir_size);
     log_msg("%d,", _test_data.buffer_size);
+    log_msg("%u,", mac);
     log_msg("%s,", _test_data.failed ? "fail" : "OK");
     log_msg("%fe-6,", _test_data.max_error * 1E6f);
     log_msg("%u,",
@@ -61,14 +66,18 @@ static void _print_test_results(void)
     log_msg("%u,", ZERO_IF_FAILED(measure_get_min_nsec(&_test_data.meas)));
     log_msg("%u,", ZERO_IF_FAILED(measure_get_max_nsec(&_test_data.meas)));
     log_msg("%u,", ZERO_IF_FAILED(measure_get_avg_nsec(&_test_data.meas)));
-
-    unsigned int mac = _test_data.fir_size * _test_data.buffer_size;
-    log_msg("%u,", ZERO_IF_FAILED(mac));
+    log_msg("%f,", ZERO_IF_FAILED((float)mac / (float)measure_get_max_cycles(
+                                                   &_test_data.meas)));
+    log_msg("%f,", ZERO_IF_FAILED((float)mac / (float)measure_get_min_cycles(
+                                                   &_test_data.meas)));
     log_msg("%f,", ZERO_IF_FAILED((float)mac / (float)measure_get_avg_cycles(
+                                                   &_test_data.meas)));
+    log_msg("%f,", ZERO_IF_FAILED((float)mac / (float)measure_get_max_nsec(
+                                                   &_test_data.meas)));
+    log_msg("%f,", ZERO_IF_FAILED((float)mac / (float)measure_get_min_nsec(
                                                    &_test_data.meas)));
     log_msg("%f\n", ZERO_IF_FAILED((float)mac / (float)measure_get_avg_nsec(
                                                     &_test_data.meas)));
-
 #undef ZERO_IF_FAILED
 }
 
@@ -144,7 +153,7 @@ static void _test_nop_1000(void)
     _test_end();
 }
 
-#define FIR_RUNNER(name, fir_data_t, init_func, run_func)                      \
+#define FIR_RUNNER(name, fir_data_t, init_func, run_func, cache_thrash_lines)  \
     {                                                                          \
         int buffer_size = _test_buffer_size[bsize_idx];                        \
         const float *input = _test_input_buffer;                               \
@@ -157,6 +166,7 @@ static void _test_nop_1000(void)
         for (int processed = 0; processed < get_input_length();                \
              processed += buffer_size)                                         \
         {                                                                      \
+            mem_cache_thrash(cache_thrash_lines);                              \
             measure_start(&_test_data.meas);                                   \
             run_func(&fir_data, input, output, buffer_size);                   \
             measure_stop(&_test_data.meas);                                    \
@@ -175,95 +185,124 @@ static void _test_nop_1000(void)
 
 static void _test_fir(void)
 {
-    int fir_idx = get_num_fir() / 2;
-    int bsize_idx = ARRAYSIZE(_test_buffer_size) / 2;
+    int fir_idx;
+    int bsize_idx;
 
     // clang-format off
+    for (fir_idx = 0; fir_idx < get_num_fir(); fir_idx++)
+    for (bsize_idx = 0; bsize_idx < ARRAYSIZE(_test_buffer_size); bsize_idx++)
+    {
 #if defined(__ADSPSHARC__)
     FIR_RUNNER("FIR.basic", struct fir_basic_t,
                 fir_basic_init,
-                fir_basic_run);
+                fir_basic_run,
+                0);
     FIR_RUNNER("FIR.basic_restrict", struct fir_basic_t,
                 fir_basic_init,
-                fir_basic_run_restrict);
+                fir_basic_run_restrict,
+                0);
     FIR_RUNNER("FIR.basic_dual_bank", struct fir_basic_t,
                 fir_basic_init_dual_bank,
-                fir_basic_run_dual_bank);
+                fir_basic_run_dual_bank,
+                0);
     FIR_RUNNER("FIR.basic_aligned", struct fir_basic_t,
                 fir_basic_init_dual_bank,
-                fir_basic_run_dual_bank_aligned);
+                fir_basic_run_dual_bank_aligned,
+                0);
     FIR_RUNNER("FIR.basic_loop_cnt", struct fir_basic_t,
                 fir_basic_init_dual_bank,
-                fir_basic_run_dual_bank_aligned_loop_count);
+                fir_basic_run_dual_bank_aligned_loop_count,
+                0);
 
     FIR_RUNNER("FIR.circular", struct fir_circular_t,
                 fir_circular_init,
-                fir_circular_run);
+                fir_circular_run,
+                0);
     FIR_RUNNER("FIR.circular_opt", struct fir_circular_t,
                 fir_circular_init_dual_bank,
-                fir_circular_run_optimized);
+                fir_circular_run_optimized,
+                0);
 
     FIR_RUNNER("FIR.lib", struct fir_lib_t,
                 fir_lib_init,
-                fir_lib_run);
+                fir_lib_run,
+                0);
 #elif defined(CPU_MIMXRT1176DVMAA_cm7)
     FIR_RUNNER("FIR.basic_ddr", struct fir_basic_t,
                 fir_basic_init_ddr,
-                fir_basic_run);
+                fir_basic_run,
+                0);
     FIR_RUNNER("FIR.basic_ddr_restrict", struct fir_basic_t,
                 fir_basic_init_ddr,
-                fir_basic_run_restrict);
+                fir_basic_run_restrict,
+                0);
     FIR_RUNNER("FIR.basic_tcm", struct fir_basic_t,
                 fir_basic_init_tcm,
-                fir_basic_run);
+                fir_basic_run,
+                0);
     FIR_RUNNER("FIR.basic_tcm_restrict", struct fir_basic_t,
                 fir_basic_init_tcm,
-                fir_basic_run_restrict);
+                fir_basic_run_restrict,
+                0);
 
     FIR_RUNNER("FIR.circular_ddr", struct fir_circular_t,
                 fir_circular_init_ddr,
-                fir_circular_run);
+                fir_circular_run,
+                0);
     FIR_RUNNER("FIR.circular_ddr_restrict", struct fir_circular_t,
                 fir_circular_init_ddr,
-                fir_circular_run_restrict);
+                fir_circular_run_restrict,
+                0);
     FIR_RUNNER("FIR.circular_ddr_unroll", struct fir_circular_t,
                 fir_circular_init_ddr,
-                fir_circular_run_unroll);
+                fir_circular_run_unroll,
+                0);
     FIR_RUNNER("FIR.circular_tcm", struct fir_circular_t,
                 fir_circular_init_tcm,
-                fir_circular_run);
+                fir_circular_run,
+                0);
     FIR_RUNNER("FIR.circular_tcm_restrict", struct fir_circular_t,
                 fir_circular_init_tcm,
-                fir_circular_run_restrict);
+                fir_circular_run_restrict,
+                0);
     FIR_RUNNER("FIR.circular_tcm_unroll", struct fir_circular_t,
                 fir_circular_init_tcm,
-                fir_circular_run_unroll);
+                fir_circular_run_unroll,
+                0);
 
     FIR_RUNNER("FIR.cmsis_ddr", struct fir_cmsis_t,
                 fir_cmsis_init_ddr,
-                fir_cmsis_run);
+                fir_cmsis_run,
+                0);
     FIR_RUNNER("FIR.cmsis_tcm", struct fir_cmsis_t,
                 fir_cmsis_init_tcm,
-                fir_cmsis_run);
+                fir_cmsis_run,
+                0);
 #else
     FIR_RUNNER("FIR.basic", struct fir_basic_t,
                 fir_basic_init,
-                fir_basic_run);
+                fir_basic_run,
+                0);
     FIR_RUNNER("FIR.basic_restrict", struct fir_basic_t,
                 fir_basic_init,
-                fir_basic_run_restrict);
+                fir_basic_run_restrict,
+                0);
 
     FIR_RUNNER("FIR.circular", struct fir_circular_t,
                 fir_circular_init,
-                fir_circular_run);
+                fir_circular_run,
+                0);
     FIR_RUNNER("FIR.circular_restrict", struct fir_circular_t,
                 fir_circular_init,
-                fir_circular_run_restrict);
+                fir_circular_run_restrict,
+                0);
 
     FIR_RUNNER("FIR.cmsis", struct fir_cmsis_t,
                 fir_cmsis_init,
-                fir_cmsis_run);
+                fir_cmsis_run,
+                0);
 #endif
+    }
     // clang-format on
 }
 
@@ -276,31 +315,57 @@ static void _test_fir_known_size(void)
 #if defined(__ADSPSHARC__)
     FIR_RUNNER("FIR.basic_known_size", struct fir_basic_t,
                 fir_basic_init_dual_bank,
-                fir_basic_run_known_size);
+                fir_basic_run_known_size,
+                0);
 
     FIR_RUNNER("FIR.circular_known_size", struct fir_circular_t,
                 fir_circular_init_dual_bank,
-                fir_circular_run_known_size);
+                fir_circular_run_known_size,
+                0);
 #elif defined(CPU_MIMXRT1176DVMAA_cm7)
     FIR_RUNNER("FIR.basic_ddr_known_size", struct fir_basic_t,
                 fir_basic_init_ddr,
-                fir_basic_run_known_size);
+                fir_basic_run_known_size,
+                0);
+    FIR_RUNNER("FIR.basic_ddr_known_size_cache_thrash", struct fir_basic_t,
+                fir_basic_init_ddr,
+                fir_basic_run_known_size,
+                256);
     FIR_RUNNER("FIR.basic_tcm_known_size", struct fir_basic_t,
                 fir_basic_init_tcm,
-                fir_basic_run_known_size);
+                fir_basic_run_known_size,
+                0);
+
     FIR_RUNNER("FIR.circular_ddr_known_size", struct fir_circular_t,
                 fir_circular_init_ddr,
-                fir_circular_run_known_size);
+                fir_circular_run_known_size,
+                0);
+    FIR_RUNNER("FIR.circular_ddr_known_size_cache_thrash", struct fir_circular_t,
+                fir_circular_init_ddr,
+                fir_circular_run_known_size,
+                256);
     FIR_RUNNER("FIR.circular_tcm_known_size", struct fir_circular_t,
                 fir_circular_init_tcm,
-                fir_circular_run_known_size);
+                fir_circular_run_known_size,
+                0);
 #else
     FIR_RUNNER("FIR.basic_known_size", struct fir_basic_t,
                 fir_basic_init,
-                fir_basic_run_known_size);
+                fir_basic_run_known_size,
+                0);
+    FIR_RUNNER("FIR.basic_known_size_cache_thrash", struct fir_basic_t,
+                fir_basic_init,
+                fir_basic_run_known_size,
+                256);
+
     FIR_RUNNER("FIR.circular_known_size", struct fir_circular_t,
                 fir_circular_init,
-                fir_circular_run_known_size);
+                fir_circular_run_known_size,
+                0);
+    FIR_RUNNER("FIR.circular_known_size_cache_thrash", struct fir_circular_t,
+                fir_circular_init,
+                fir_circular_run_known_size,
+                256);
 #endif
     // clang-format on
 }
@@ -314,6 +379,6 @@ void test_run(void)
     _test_nop_100();
     _test_nop_1000();
 
-    _test_fir();
     _test_fir_known_size();
+    _test_fir();
 }

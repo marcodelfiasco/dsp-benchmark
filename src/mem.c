@@ -9,20 +9,50 @@
 #define MEM_POOL_SIZE (48 * 1024)
 #define MEM_ALLOC_ALIGN 8
 
-#if defined(__ADSPSHARC__)
-#pragma alignment_region(MEM_ALLOC_ALIGN)
-static dm uint8_t _dm_pool[MEM_POOL_SIZE];
-static pm uint8_t _pm_pool[MEM_POOL_SIZE];
-#pragma alignment_region_end
-#elif defined(CPU_MIMXRT1176DVMAA_cm7)
-static __attribute__((section(".data")))
-__attribute__((aligned(MEM_ALLOC_ALIGN))) uint8_t _ddr_pool[MEM_POOL_SIZE];
-static __attribute__((section("DataQuickAccess")))
-__attribute__((aligned(MEM_ALLOC_ALIGN))) uint8_t _tcm_pool[MEM_POOL_SIZE];
+#define CACHE_THRASHER_SIZE (8 * 1024 * 1024)
+
+#if defined(CPU_MIMXRT1176DVMAA_cm7)
+#define CACHE_LINE_SIZE 32
 #else
+#define CACHE_LINE_SIZE 64
+#endif
+
+// clang-format off
+#if defined(__ADSPSHARC__)
+
+#pragma alignment_region(8)
+static dm
+uint8_t _dm_pool[MEM_POOL_SIZE];
+
+static pm
+uint8_t _pm_pool[MEM_POOL_SIZE];
+#pragma alignment_region_end
+
+static volatile dm
+uint8_t _cache_thrasher_mem[1]; // No cache thrasher for SHARC
+
+#elif defined(CPU_MIMXRT1176DVMAA_cm7)
+
+static __attribute__((section("DataQuickAccess"))) __attribute__((aligned(MEM_ALLOC_ALIGN)))
+uint8_t _tcm_pool[MEM_POOL_SIZE];
+
+static __attribute__((section("DDRCacheNoInit"))) __attribute__((aligned(MEM_ALLOC_ALIGN)))
+uint8_t _ddr_pool[MEM_POOL_SIZE];
+
+static __attribute__((section("DDRCacheNoInit"))) __attribute__((aligned(CACHE_LINE_SIZE)))
+volatile uint8_t _cache_thrasher_mem[CACHE_THRASHER_SIZE];
+
+#else
+
 static __attribute__((aligned(MEM_ALLOC_ALIGN)))
 uint8_t _ddr_pool[MEM_POOL_SIZE];
+
+static __attribute__((aligned(CACHE_LINE_SIZE)))
+volatile uint8_t _cache_thrasher_mem[CACHE_THRASHER_SIZE];
 #endif
+// clang-format on
+
+static unsigned int _cache_thrasher_pos = 0;
 
 struct mem_pool_desc_t
 {
@@ -47,6 +77,10 @@ void *mem_alloc(enum mem_pool_type mem_type, unsigned int size)
 {
     uint8_t *ptr = NULL;
 
+#if defined(__ADSPSHARC__)
+    ASSERT(MEM_ALLOC_ALIGN == 8);
+#endif
+
     if (mem_type < MEM_TYPE_NUM)
     {
         if ((_mem_desc[mem_type].allocated_size + size) <=
@@ -70,5 +104,17 @@ void mem_free_all(void)
     for (i = 0; i < MEM_TYPE_NUM; i++)
     {
         _mem_desc[i].allocated_size = 0;
+    }
+}
+
+void mem_cache_thrash(int cache_lines_num)
+{
+    int i;
+
+    for (i = 0; i < cache_lines_num; i++)
+    {
+        _cache_thrasher_mem[_cache_thrasher_pos] ^= i;
+        _cache_thrasher_pos += CACHE_LINE_SIZE;
+        _cache_thrasher_pos %= sizeof(_cache_thrasher_mem);
     }
 }

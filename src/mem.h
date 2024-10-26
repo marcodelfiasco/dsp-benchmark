@@ -19,5 +19,6 @@ enum mem_pool_type
 
 void *mem_alloc(enum mem_pool_type mem_type, unsigned int size);
 void mem_free_all(void);
+void mem_cache_thrash(int cache_lines_num);
 
 #endif // MEM_H_
