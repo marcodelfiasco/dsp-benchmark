@@ -18,6 +18,7 @@
 #else
 #include "rpi/fir_basic.h"
 #include "rpi/fir_circular.h"
+#include "rpi/fir_cmsis.h"
 #endif
 
 #define MAX_INPUT_LEN 8192
@@ -258,6 +259,10 @@ static void _test_fir(void)
     FIR_RUNNER("FIR.circular_restrict", struct fir_circular_t,
                 fir_circular_init,
                 fir_circular_run_restrict);
+
+    FIR_RUNNER("FIR.cmsis", struct fir_cmsis_t,
+                fir_cmsis_init,
+                fir_cmsis_run);
 #endif
     // clang-format on
 }
