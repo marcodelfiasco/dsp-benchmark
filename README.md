@@ -4,7 +4,13 @@ This repository contains the code for the ADC24 talk "Crunching same numbers on 
 
 ## ADSP-21569
 ### Hardware setup
-TODO
+If you need to use test points you need to make some soldering on the EZ-Kit board. Test points are optional.
+
+Test point reference:
+* TP0: FLG2 - PB_03 -> LED7 (yellow)
+* TP1: FLG3 - PB_02
+
+See EZ-Kit board schematic for more details.
 
 ### Software setup
 You should have a licensed copy of [Crosscore Embedded Studio](https://www.analog.com/en/resources/evaluation-hardware-and-software/software/adswt-cces.html) installed on your system.
@@ -31,12 +37,18 @@ export LD_LIBRARY_PATH=<your-cces-install-path>/System:${LD_LIBRARY_PATH}
 It seems that the SHARC compiler running from WSL is not able to access mountpoints on `/mnt/`, so working under your local WSL home directory is recommended.
 
 ### Run
-TODO
+You can load the `.dxe` using CCES and run it from the IDE.
 
 
 ## MIMXRT1170-EVKB
 ### Hardware setup
-TODO
+If you need to use test points you need to make some soldering on the EVKB board. Test points are optional.
+
+Test point reference:
+* TP0: Green LED
+* TP1: Red LED
+
+See EVKB board schematic for more details.
 
 ### Software setup
 1. Download the MCUXpresso SDK to `targets/mimxrt1170-evkb` using `west`. It will take a while.
@@ -63,7 +75,7 @@ make
 or just use scripts in the `scripts` directory.
 
 ### Run
-TODO
+You can load the `.elf` using MCUXpresso and run it from the IDE.
 
 
 ## Raspberry Pi 4
@@ -109,4 +121,18 @@ make
 or just use scripts in the `scripts` directory.
 
 ### Run
-TODO
+Execute `benchmark-rpi4` application.
+
+# Architecture notes
+## Cache
+### ADSP
+The cache for this processor is not enabled in the project.
+We will not collect cached memory data for SHARC since usually DSP applications run on internal memory only.
+
+### iMXRT
+L1: 32KB, 4 ways, 32B per line, 256 lines.
+L2: none
+
+### RPI4
+L1: 32KB, 2 ways, 64B per line, 256 lines.
+L2: 1024KB, 16 ways, 64B per line, 1024 lines.
