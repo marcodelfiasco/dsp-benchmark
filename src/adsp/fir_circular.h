@@ -95,4 +95,34 @@ static void fir_circular_run_optimized(struct fir_circular_t *fir,
     fir->pos = pos;
 }
 
+static void fir_circular_run_known_size(struct fir_circular_t *fir,
+                                        const float *restrict input,
+                                        float *restrict output, int buffer_size)
+{
+    pm float *restrict coeff = (pm float *)fir->coeff;
+    dm float *restrict state = (dm float *)fir->state;
+    int pos = fir->pos;
+
+    ASSERT(fir->size == FIR_LEN_KNOWN);
+    ASSERT(buffer_size == BUFFER_LEN_KNOWN);
+
+#pragma all_aligned
+    for (int i = 0; i < BUFFER_LEN_KNOWN; i++)
+    {
+        state[pos++] = *input++;
+        pos = pos % FIR_LEN_KNOWN;
+
+        float sum = 0;
+        int taps_pos = pos;
+#pragma all_aligned
+        for (int j = 0; j < FIR_LEN_KNOWN; j++)
+        {
+            sum += coeff[j] * state[taps_pos++];
+            taps_pos %= FIR_LEN_KNOWN;
+        }
+        *output++ = sum;
+    }
+    fir->pos = pos;
+}
+
 #endif // FIR_CIRCULAR_H_

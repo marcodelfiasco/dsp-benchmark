@@ -261,6 +261,45 @@ static void _test_fir(void)
 #endif
     // clang-format on
 }
+
+static void _test_fir_known_size(void)
+{
+    int fir_idx = get_num_fir() / 2;
+    int bsize_idx = 2;
+
+    // clang-format off
+#if defined(__ADSPSHARC__)
+    FIR_RUNNER("FIR.basic_known_size", struct fir_basic_t,
+                fir_basic_init_dual_bank,
+                fir_basic_run_known_size);
+
+    FIR_RUNNER("FIR.circular_known_size", struct fir_circular_t,
+                fir_circular_init_dual_bank,
+                fir_circular_run_known_size);
+#elif defined(CPU_MIMXRT1176DVMAA_cm7)
+    FIR_RUNNER("FIR.basic_ddr_known_size", struct fir_basic_t,
+                fir_basic_init_ddr,
+                fir_basic_run_known_size);
+    FIR_RUNNER("FIR.basic_tcm_known_size", struct fir_basic_t,
+                fir_basic_init_tcm,
+                fir_basic_run_known_size);
+    FIR_RUNNER("FIR.circular_ddr_known_size", struct fir_circular_t,
+                fir_circular_init_ddr,
+                fir_circular_run_known_size);
+    FIR_RUNNER("FIR.circular_tcm_known_size", struct fir_circular_t,
+                fir_circular_init_tcm,
+                fir_circular_run_known_size);
+#else
+    FIR_RUNNER("FIR.basic_known_size", struct fir_basic_t,
+                fir_basic_init,
+                fir_basic_run_known_size);
+    FIR_RUNNER("FIR.circular_known_size", struct fir_circular_t,
+                fir_circular_init,
+                fir_circular_run_known_size);
+#endif
+    // clang-format on
+}
+
 void test_run(void)
 {
     log_msg("Executing tests\n");
@@ -271,4 +310,5 @@ void test_run(void)
     _test_nop_1000();
 
     _test_fir();
+    _test_fir_known_size();
 }

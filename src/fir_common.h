@@ -11,4 +11,7 @@
 #define FIR_LEN_MAX 4096
 #define FIR_LEN_MUL 16
 
+#define BUFFER_LEN_KNOWN 32 // Buffer size for known size tests
+#define FIR_LEN_KNOWN 256 // FIR size for known size tests
+
 #endif // FIR_COMMON_H_

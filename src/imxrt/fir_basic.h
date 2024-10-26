@@ -80,4 +80,29 @@ static void fir_basic_run_restrict(const struct fir_basic_t *fir,
     memmove(&state[0], &state[buffer_size], (fir_size - 1) * sizeof(float));
 }
 
+static void fir_basic_run_known_size(const struct fir_basic_t *fir,
+                                     const float *restrict input,
+                                     float *restrict output, int buffer_size)
+{
+    float *restrict coeff = fir->coeff;
+    float *restrict state = fir->state;
+
+    ASSERT(fir->size == FIR_LEN_KNOWN);
+    ASSERT(buffer_size == BUFFER_LEN_KNOWN);
+
+    memcpy(&state[FIR_LEN_KNOWN - 1], input, BUFFER_LEN_KNOWN * sizeof(float));
+    for (int i = 0; i < BUFFER_LEN_KNOWN; i++)
+    {
+        float sum = 0;
+        float *taps = &state[FIR_LEN_KNOWN - 1 + i];
+        for (int j = 0; j < FIR_LEN_KNOWN; j++)
+        {
+            sum += coeff[j] * (*taps--);
+        }
+        *output++ = sum;
+    }
+    memmove(&state[0], &state[BUFFER_LEN_KNOWN],
+            (FIR_LEN_KNOWN - 1) * sizeof(float));
+}
+
 #endif // FIR_BASIC_H_
