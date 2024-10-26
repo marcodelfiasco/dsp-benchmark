@@ -7,19 +7,21 @@
 #include "mem.h"
 
 #define MEM_POOL_SIZE (48 * 1024)
+#define MEM_ALLOC_ALIGN 8
 
 #if defined(__ADSPSHARC__)
-#pragma alignment_region(8)
+#pragma alignment_region(MEM_ALLOC_ALIGN)
 static dm uint8_t _dm_pool[MEM_POOL_SIZE];
 static pm uint8_t _pm_pool[MEM_POOL_SIZE];
 #pragma alignment_region_end
 #elif defined(CPU_MIMXRT1176DVMAA_cm7)
-static __attribute__((section(".data"))) __attribute__((aligned(8)))
-uint8_t _ddr_pool[MEM_POOL_SIZE];
-static __attribute__((section("DataQuickAccess"))) __attribute__((aligned(8)))
-uint8_t _tcm_pool[MEM_POOL_SIZE];
+static __attribute__((section(".data")))
+__attribute__((aligned(MEM_ALLOC_ALIGN))) uint8_t _ddr_pool[MEM_POOL_SIZE];
+static __attribute__((section("DataQuickAccess")))
+__attribute__((aligned(MEM_ALLOC_ALIGN))) uint8_t _tcm_pool[MEM_POOL_SIZE];
 #else
-static __attribute__((aligned(8))) uint8_t _ddr_pool[MEM_POOL_SIZE];
+static __attribute__((aligned(MEM_ALLOC_ALIGN)))
+uint8_t _ddr_pool[MEM_POOL_SIZE];
 #endif
 
 struct mem_pool_desc_t
@@ -52,6 +54,8 @@ void *mem_alloc(enum mem_pool_type mem_type, unsigned int size)
         {
             ptr = _mem_desc[mem_type].base + _mem_desc[mem_type].allocated_size;
             _mem_desc[mem_type].allocated_size += size;
+            _mem_desc[mem_type].allocated_size += MEM_ALLOC_ALIGN - 1;
+            _mem_desc[mem_type].allocated_size &= ~(MEM_ALLOC_ALIGN - 1);
         }
     }
 
