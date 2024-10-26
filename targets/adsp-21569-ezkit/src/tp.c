@@ -6,12 +6,8 @@
 #include <stdio.h>
 #include "macro.h"
 
-/* TP0 : FLG2 - PB_03 -> LED7 (yellow)
- * - conflicts with rotary encoder (IOEXP_PIN_nTHUMBWHEEL_OE must be 1)
- * - conflicts with push button 1 (IOEXP_PIN_nPUSHBUTTON1_EN must be 1)
- */
-
-/* TP1: FLG3 - PB_02 */
+// TP0: FLG2 - PB_03 -> LED7 (yellow)
+// TP1: FLG3 - PB_02
 #define FLG2_PIN 3
 #define FLG3_PIN 2
 
