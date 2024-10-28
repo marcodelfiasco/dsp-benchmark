@@ -21,6 +21,11 @@ set(INCLUDES
 	${SOURCES_DIR}
 )
 
+# Enable compiler feedback
+add_compile_options(-fverbose-asm)
+add_compile_options(-save-temps=cwd)
+add_compile_options(-fdump-tree-vect-details)
+
 # Add CMSIS-DSP
 add_compile_options(-D__GNUC_PYTHON__)
 add_compile_options(-DARM_MATH_NEON)
