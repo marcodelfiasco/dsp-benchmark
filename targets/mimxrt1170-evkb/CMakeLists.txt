@@ -35,6 +35,11 @@ set(MCUX_SDK_PROJECT_NAME benchmark-imxrt.elf)
 include(${PROJECT_DIR}/flags.cmake)
 include(${PROJECT_DIR}/config.cmake)
 
+# Options for CMSIS DSP
+add_compile_options(-DARM_MATH_LOOPUNROLL)
+add_compile_options(-DDISABLEFLOAT16)
+add_compile_options(-Ofast)
+
 add_executable(${MCUX_SDK_PROJECT_NAME} 
 	${COMMON_SOURCES_DIR}/main.c
 	${COMMON_SOURCES_DIR}/measure.c
