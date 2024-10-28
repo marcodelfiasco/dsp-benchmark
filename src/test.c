@@ -19,6 +19,7 @@
 #else
 #include "rpi/fir_basic.h"
 #include "rpi/fir_circular.h"
+#include "rpi/fir_opt.h"
 #include "rpi/fir_cmsis.h"
 #endif
 
@@ -310,6 +311,11 @@ static void _test_fir(void)
     FIR_RUNNER("FIR.circular_restrict", struct fir_circular_t,
                 fir_circular_init,
                 fir_circular_run_restrict,
+                0);
+
+    FIR_RUNNER("FIR.opt", struct fir_opt_t,
+                fir_opt_init_ddr,
+                fir_opt_run,
                 0);
 
     FIR_RUNNER("FIR.cmsis", struct fir_cmsis_t,
