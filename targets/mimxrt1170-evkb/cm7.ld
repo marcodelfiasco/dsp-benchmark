@@ -182,6 +182,12 @@ SECTIONS
     __noncachedata_end__ = .;     /* define a global symbol at ncache data end */
   } > m_ncache
 
+  .ncache_vectors :
+  {
+    *(TestVectorConst)
+    . = ALIGN(4);
+  } > m_ncache
+
   __DATA_END = __NDATA_ROM + (__noncachedata_init_end__ - __noncachedata_start__);
   text_end = ORIGIN(m_text) + LENGTH(m_text);
   ASSERT(__DATA_END <= text_end, "region m_text overflowed with text and data")
