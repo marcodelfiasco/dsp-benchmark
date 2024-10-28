@@ -9,4 +9,4 @@ mkdir build &> /dev/null || true
 cd build
 source ${ELK_SDK_DIR}/environment-setup-cortexa72-elk-linux
 cmake -DCMAKE_BUILD_TYPE=Release ..
-make
+make -j${nproc}
