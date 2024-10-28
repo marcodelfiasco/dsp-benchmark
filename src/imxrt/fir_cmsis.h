@@ -18,11 +18,13 @@ struct fir_cmsis_t
 static void fir_cmsis_init_ddr(struct fir_cmsis_t *fir, const float *coeff,
                                int fir_size, int buffer_size)
 {
+    ASSERT(fir_size % 4 == 0);
+
     fir->coeff = mem_alloc(DDR, fir_size * sizeof(float));
     fir->state = mem_alloc(DDR, (fir_size + buffer_size - 1) * sizeof(float));
 
-    copy_float_buffer(coeff, fir->coeff, fir_size);
-    clear_float_buffer(fir->state, (fir_size + buffer_size - 1));
+    reverse_float_buffer(coeff, fir->coeff, fir_size);
+    clear_float_buffer(fir->state, (fir_size + 2 * buffer_size - 1));
 
     arm_fir_init_f32(&fir->inst, fir_size, fir->coeff, fir->state, buffer_size);
 }
@@ -30,11 +32,13 @@ static void fir_cmsis_init_ddr(struct fir_cmsis_t *fir, const float *coeff,
 static void fir_cmsis_init_tcm(struct fir_cmsis_t *fir, const float *coeff,
                                int fir_size, int buffer_size)
 {
+    ASSERT(fir_size % 4 == 0);
+
     fir->coeff = mem_alloc(TCM, fir_size * sizeof(float));
     fir->state = mem_alloc(TCM, (fir_size + buffer_size - 1) * sizeof(float));
 
-    copy_float_buffer(coeff, fir->coeff, fir_size);
-    clear_float_buffer(fir->state, (fir_size + buffer_size - 1));
+    reverse_float_buffer(coeff, fir->coeff, fir_size);
+    clear_float_buffer(fir->state, (fir_size + 2 * buffer_size - 1));
 
     arm_fir_init_f32(&fir->inst, fir_size, fir->coeff, fir->state, buffer_size);
 }
