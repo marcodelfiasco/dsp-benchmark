@@ -24,7 +24,7 @@ void measure_reset(struct measure_t *data)
     uint64_t overhead;
 
     _reset(data, 0);
-    for (i = 0; i < 1000; i++)
+    for (i = 0; i < 10000; i++)
     {
         measure_start(data);
         measure_stop(data);

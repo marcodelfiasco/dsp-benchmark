@@ -120,7 +120,7 @@ static void _test_nop_100(void)
     _test_begin("100 NOP", 0, 0);
 
     tp0_set();
-    for (int loop = 0; loop < 1000; loop++)
+    for (int loop = 0; loop < 10000; loop++)
     {
         tp1_set();
         measure_start(&_test_data.meas);
@@ -138,7 +138,7 @@ static void _test_nop_1000(void)
     _test_begin("1000 NOP", 0, 0);
 
     tp0_set();
-    for (int loop = 0; loop < 1000; loop++)
+    for (int loop = 0; loop < 10000; loop++)
     {
         tp1_set();
         measure_start(&_test_data.meas);
