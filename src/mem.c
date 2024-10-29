@@ -78,7 +78,7 @@ void *mem_alloc(enum mem_pool_type mem_type, unsigned int size)
     uint8_t *ptr = NULL;
 
 #if defined(__ADSPSHARC__)
-    ASSERT(MEM_ALLOC_ALIGN == 8);
+    REQUIRE(MEM_ALLOC_ALIGN == 8);
 #endif
 
     if (mem_type < MEM_TYPE_NUM)
@@ -93,7 +93,7 @@ void *mem_alloc(enum mem_pool_type mem_type, unsigned int size)
         }
     }
 
-    ASSERT(ptr != NULL);
+    REQUIRE(ptr != NULL);
     return ptr;
 }
 

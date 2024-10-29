@@ -83,7 +83,7 @@ void target_init(void)
 
     evl_fd = evl_attach_self("evl-thread:%d", getpid());
 
-    ASSERT(evl_is_inband() == false);
+    REQUIRE(evl_is_inband() == false);
 }
 
 uint64_t get_timestamp(void)

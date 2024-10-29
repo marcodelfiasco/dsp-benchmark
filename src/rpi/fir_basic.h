@@ -76,8 +76,8 @@ static void fir_basic_run_known_size(const struct fir_basic_t *fir,
     float *restrict coeff = fir->coeff;
     float *restrict state = fir->state;
 
-    ASSERT(fir->size == FIR_LEN_KNOWN);
-    ASSERT(buffer_size == BUFFER_LEN_KNOWN);
+    REQUIRE(fir->size == FIR_LEN_KNOWN);
+    REQUIRE(buffer_size == BUFFER_LEN_KNOWN);
 
     memcpy(&state[FIR_LEN_KNOWN - 1], input, BUFFER_LEN_KNOWN * sizeof(float));
     for (int i = 0; i < BUFFER_LEN_KNOWN; i++)

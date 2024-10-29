@@ -99,7 +99,7 @@ static void _test_begin(const char *name, int fir_size, int buffer_size)
 
     clear_float_buffer(_test_input_buffer, MAX_INPUT_LEN);
     clear_float_buffer(_test_output_buffer, MAX_OUTPUT_LEN);
-    ASSERT(get_input_length() <= MAX_INPUT_LEN);
+    REQUIRE(get_input_length() <= MAX_INPUT_LEN);
     copy_float_buffer(get_input(), _test_input_buffer, get_input_length());
 
     mem_free_all();

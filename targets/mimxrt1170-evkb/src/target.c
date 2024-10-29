@@ -19,7 +19,7 @@ void target_init(void)
     tp_init();
 
     uint32_t core_clock_freq = CLOCK_GetFreq(kCLOCK_CpuClk);
-    ASSERT(core_clock_freq == 996000000); // We should be running at 996MHz
+    REQUIRE(core_clock_freq == 996000000); // We should be running at 996MHz
     (void)core_clock_freq;
 }
 

@@ -18,7 +18,7 @@ struct fir_cmsis_t
 static void fir_cmsis_init_ddr(struct fir_cmsis_t *fir, const float *coeff,
                                int fir_size, int buffer_size)
 {
-    ASSERT(fir_size % 4 == 0);
+    REQUIRE(fir_size % 4 == 0);
 
     fir->coeff = mem_alloc(DDR, fir_size * sizeof(float));
     fir->state = mem_alloc(DDR, (fir_size + buffer_size - 1) * sizeof(float));
@@ -32,7 +32,7 @@ static void fir_cmsis_init_ddr(struct fir_cmsis_t *fir, const float *coeff,
 static void fir_cmsis_init_tcm(struct fir_cmsis_t *fir, const float *coeff,
                                int fir_size, int buffer_size)
 {
-    ASSERT(fir_size % 4 == 0);
+    REQUIRE(fir_size % 4 == 0);
 
     fir->coeff = mem_alloc(TCM, fir_size * sizeof(float));
     fir->state = mem_alloc(TCM, (fir_size + buffer_size - 1) * sizeof(float));

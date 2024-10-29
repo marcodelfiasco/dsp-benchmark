@@ -16,12 +16,12 @@ void target_init(void)
     tp_init();
 
     ADI_PWR_RESULT pwr_result = adi_pwr_Init(0, 25000000);
-    ASSERT(pwr_result == ADI_PWR_SUCCESS);
+    REQUIRE(pwr_result == ADI_PWR_SUCCESS);
 
     uint32_t core_clock_freq;
     pwr_result = adi_pwr_GetCoreClkFreq(0u, &core_clock_freq);
-    ASSERT(pwr_result == ADI_PWR_SUCCESS);
-    ASSERT(core_clock_freq == 1000000000); // We should be running at 1GHz
+    REQUIRE(pwr_result == ADI_PWR_SUCCESS);
+    REQUIRE(core_clock_freq == 1000000000); // We should be running at 1GHz
 }
 
 uint64_t get_timestamp(void)

@@ -103,8 +103,8 @@ static void fir_circular_run_known_size(struct fir_circular_t *fir,
     dm float *restrict state = (dm float *)fir->state;
     int pos = fir->pos;
 
-    ASSERT(fir->size == FIR_LEN_KNOWN);
-    ASSERT(buffer_size == BUFFER_LEN_KNOWN);
+    REQUIRE(fir->size == FIR_LEN_KNOWN);
+    REQUIRE(buffer_size == BUFFER_LEN_KNOWN);
 
 #pragma all_aligned
     for (int i = 0; i < BUFFER_LEN_KNOWN; i++)

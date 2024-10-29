@@ -1,12 +1,16 @@
 #ifndef MACRO_H_
 #define MACRO_H_
 
-#include <assert.h>
-
 #define SUCCESS 0
 #define FAILED -1
 
-#define ASSERT(cond) assert(cond)
+#define REQUIRE(cond)                             \
+    do                                            \
+    {                                             \
+        extern void require_failed(const char *); \
+        if (!(cond))                              \
+            require_failed(#cond);                \
+    } while (0)
 
 #define CHECK_RESULT_RETURN(result) \
     if (result != SUCCESS)          \
@@ -20,7 +24,6 @@
         goto label;                      \
     }
 
-#define ASSERT(cond) assert(cond)
 #define ARRAYSIZE(x) (sizeof(x) / sizeof(x[0]))
 
 #define BIT(n) (0x1 << (n))
