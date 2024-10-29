@@ -81,8 +81,8 @@ You can load the `.elf` using MCUXpresso and run it from the IDE.
 ## Raspberry Pi 4
 On this target we will use [ELK Audio OS](https://www.elk.audio/).
 
-Currently the software will not use any specific EVL realtime service, but we are running single threaded on an isolated CPU.
-Running on an isolated CPU will limit the interaction with threads running on other cores.
+The application runs on a realtime EVL thread with maximum priority.
+This will minimize disturbance from other processes.
 
 ### Board setup
 You can follow the ELK official documentation on https://elk-audio.github.io/elk-docs/html/intro/getting_started_with_raspberry.html.

@@ -9,6 +9,8 @@
 #include <pthread.h>
 #include <sys/mman.h>
 #include <sys/types.h>
+#include <evl/clock.h>
+#include <evl/thread.h>
 #include "log.h"
 #include "macro.h"
 
@@ -44,6 +46,7 @@ void target_init(void)
     cpu_set_t set;
     struct sched_param param;
     int ret;
+    int evl_fd;
 
     // Check CPU frequency
     if (_get_cpu_freq() != CPU_FREQ)
@@ -77,12 +80,16 @@ void target_init(void)
         log_msg("pthread_setschedparam failed\n");
         exit(1);
     }
+
+    evl_fd = evl_attach_self("evl-thread:%d", getpid());
+
+    ASSERT(evl_is_inband() == false);
 }
 
 uint64_t get_timestamp(void)
 {
     struct timespec time;
-    clock_gettime(CLOCK_MONOTONIC_RAW, &time);
+    evl_read_clock(EVL_CLOCK_MONOTONIC, &time);
     return (uint64_t)time.tv_sec * (uint64_t)1000000000 + time.tv_nsec;
 }
 
