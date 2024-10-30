@@ -64,14 +64,6 @@ void target_init(void)
         exit(1);
     }
 
-    // Lock the whole address space
-    ret = mlockall(MCL_CURRENT | MCL_FUTURE);
-    if (ret < 0)
-    {
-        log_msg("mlockall failed\n");
-        exit(1);
-    }
-
     // Set sched FIFO with maximum priority
     param.sched_priority = sched_get_priority_max(SCHED_FIFO);
     ret = pthread_setschedparam(pthread_self(), SCHED_FIFO, &param);
@@ -82,6 +74,7 @@ void target_init(void)
     }
 
     evl_fd = evl_attach_self("evl-thread:%d", getpid());
+    REQUIRE(evl_fd >= 0);
 
     REQUIRE(evl_is_inband() == false);
 }
