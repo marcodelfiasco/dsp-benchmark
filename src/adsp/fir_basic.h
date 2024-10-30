@@ -154,32 +154,4 @@ static void fir_basic_run_dual_bank_aligned_loop_count(
     memmove(&state[0], &state[buffer_size], (fir_size - 1) * sizeof(float));
 }
 
-static void fir_basic_run_known_size(const struct fir_basic_t *fir,
-                                     const float *restrict input,
-                                     float *restrict output, int buffer_size)
-{
-    pm float *restrict coeff = (pm float *)fir->coeff;
-    dm float *restrict state = (dm float *)fir->state;
-    int fir_size = fir->size;
-
-    REQUIRE(fir_size == FIR_LEN_KNOWN);
-    REQUIRE(buffer_size == BUFFER_LEN_KNOWN);
-
-    memcpy(&state[FIR_LEN_KNOWN - 1], input, BUFFER_LEN_KNOWN * sizeof(float));
-#pragma all_aligned
-    for (int i = 0; i < BUFFER_LEN_KNOWN; i++)
-    {
-        float sum = 0;
-        float *taps = &state[FIR_LEN_KNOWN - 1 + i];
-#pragma all_aligned
-        for (int j = 0; j < FIR_LEN_KNOWN; j++)
-        {
-            sum += coeff[j] * (*taps--);
-        }
-        *output++ = sum;
-    }
-    memmove(&state[0], &state[BUFFER_LEN_KNOWN],
-            (FIR_LEN_KNOWN - 1) * sizeof(float));
-}
-
 #endif // FIR_BASIC_H_
