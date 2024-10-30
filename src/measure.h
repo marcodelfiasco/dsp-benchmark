@@ -3,6 +3,9 @@
 
 #include <stdint.h>
 
+#define SKIP_INITIAL_MEASURE_NUM \
+    1 // Number of initial measurements to be skipped
+
 struct measure_t
 {
     uint64_t start;
@@ -11,6 +14,7 @@ struct measure_t
     uint64_t min;
     uint64_t max;
     uint64_t overhead;
+    int skip;
 };
 
 void measure_reset(struct measure_t *data);

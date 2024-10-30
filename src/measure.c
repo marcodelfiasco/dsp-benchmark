@@ -16,6 +16,7 @@ static void _reset(struct measure_t *data, uint64_t overhead)
     data->min = UINT64_MAX;
     data->max = 0;
     data->overhead = overhead;
+    data->skip = SKIP_INITIAL_MEASURE_NUM;
 }
 
 void measure_reset(struct measure_t *data)
@@ -38,7 +39,16 @@ void measure_reset(struct measure_t *data)
 #endif
 void measure_start(struct measure_t *data)
 {
-    data->start = get_timestamp();
+    uint64_t initial_ts = get_timestamp();
+    uint64_t ts;
+
+    // Wait for the timestamp to change
+    do
+    {
+        ts = get_timestamp();
+    } while (ts == initial_ts);
+
+    data->start = ts;
 }
 
 #ifdef __ADSPSHARC__
@@ -47,6 +57,13 @@ void measure_start(struct measure_t *data)
 void measure_stop(struct measure_t *data)
 {
     uint64_t period;
+
+    // Skip initial measurements
+    if (data->skip > 0)
+    {
+        data->skip--;
+        return;
+    }
 
     period = get_timestamp() - data->start;
     if (period >= data->overhead)
