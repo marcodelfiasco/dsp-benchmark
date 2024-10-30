@@ -3,8 +3,8 @@
 
 #include <stdint.h>
 
-#define SKIP_INITIAL_MEASURE_NUM \
-    1 // Number of initial measurements to be skipped
+// Number of initial measurements to be skipped
+#define MEASURE_SKIP_COUNT 1
 
 struct measure_t
 {

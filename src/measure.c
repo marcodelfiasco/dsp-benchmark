@@ -16,7 +16,7 @@ static void _reset(struct measure_t *data, uint64_t overhead)
     data->min = UINT64_MAX;
     data->max = 0;
     data->overhead = overhead;
-    data->skip = SKIP_INITIAL_MEASURE_NUM;
+    data->skip = MEASURE_SKIP_COUNT;
 }
 
 void measure_reset(struct measure_t *data)
@@ -65,7 +65,14 @@ void measure_stop(struct measure_t *data)
         return;
     }
 
+#ifdef CPU_MIMXRT1176DVMAA_cm7
+    /* Handle ARMv7 32 bit counter */
+    int32_t int_diff = (int32_t)get_timestamp() - (int32_t)data->start;
+    period = (uint64_t)(int_diff < 0 ? -int_diff : int_diff);
+#else
     period = get_timestamp() - data->start;
+#endif
+
     if (period >= data->overhead)
     {
         period -= data->overhead;
