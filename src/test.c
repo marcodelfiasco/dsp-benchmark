@@ -135,6 +135,37 @@ static void _test_tp_pulses(void)
     }
 }
 
+static void _test_measure(void)
+{
+    const float max_error_percent = 10.0f;
+
+    for (int repeat = 0; repeat < 100; repeat++)
+    {
+        struct measure_t meas;
+
+        measure_reset(&meas);
+        for (int loop = 0; loop < 1000; loop++)
+        {
+            measure_start(&meas);
+            NOP_100();
+            NOP_100();
+            NOP_100();
+            NOP_100();
+            NOP_100();
+            measure_stop(&meas);
+        }
+
+        float error_percent =
+            ((float)measure_get_avg_cycles(&meas) - 500.0f) / 500.0f * 100.0f;
+        if (error_percent < 0)
+        {
+            error_percent = -error_percent;
+        }
+        //log_msg("measure error: +-%f%% (%f)\n", error_percent, (float)measure_get_avg_cycles(&meas));
+        REQUIRE(error_percent <= max_error_percent);
+    }
+}
+
 static void _test_nop_100(void)
 {
     _test_begin("100 NOP", 0, 0);
@@ -362,6 +393,7 @@ void test_run(void)
     _print_test_result_header();
 
     _test_tp_pulses();
+    _test_measure();
     _test_nop_100();
     _test_nop_1000();
 
