@@ -7,20 +7,22 @@
 #include "mem.h"
 
 #define MEM_POOL_SIZE (48 * 1024)
-#define MEM_ALLOC_ALIGN 8
-
 #define CACHE_THRASHER_SIZE (8 * 1024 * 1024)
 
+#define CACHE_SIZE 32768
 #if defined(CPU_MIMXRT1176DVMAA_cm7)
 #define CACHE_LINE_SIZE 32
 #else
 #define CACHE_LINE_SIZE 64
+// Note: ADSP does not have cache enabled, using this value for convenience only
 #endif
+
+#define MEM_ALLOC_ALIGN CACHE_LINE_SIZE
 
 // clang-format off
 #if defined(__ADSPSHARC__)
 
-#pragma alignment_region(8)
+#pragma alignment_region(64)
 static dm
 uint8_t _dm_pool[MEM_POOL_SIZE];
 
@@ -33,21 +35,21 @@ uint8_t _cache_thrasher_mem[1]; // No cache thrasher for SHARC
 
 #elif defined(CPU_MIMXRT1176DVMAA_cm7)
 
-static __attribute__((section("DataQuickAccess"))) __attribute__((aligned(MEM_ALLOC_ALIGN)))
+static __attribute__((section("DataQuickAccess"))) __attribute__((aligned(CACHE_SIZE)))
 uint8_t _tcm_pool[MEM_POOL_SIZE];
 
-static __attribute__((section("DDRCacheNoInit"))) __attribute__((aligned(MEM_ALLOC_ALIGN)))
+static __attribute__((section("DDRCacheNoInit"))) __attribute__((aligned(CACHE_SIZE)))
 uint8_t _ddr_pool[MEM_POOL_SIZE];
 
-static __attribute__((section("DDRCacheNoInit"))) __attribute__((aligned(CACHE_LINE_SIZE)))
+static __attribute__((section("DDRCacheNoInit"))) __attribute__((aligned(CACHE_SIZE)))
 volatile uint8_t _cache_thrasher_mem[CACHE_THRASHER_SIZE];
 
 #else
 
-static __attribute__((aligned(MEM_ALLOC_ALIGN)))
+static __attribute__((aligned(CACHE_SIZE)))
 uint8_t _ddr_pool[MEM_POOL_SIZE];
 
-static __attribute__((aligned(CACHE_LINE_SIZE)))
+static __attribute__((aligned(CACHE_SIZE)))
 volatile uint8_t _cache_thrasher_mem[CACHE_THRASHER_SIZE];
 #endif
 // clang-format on
@@ -78,7 +80,7 @@ void *mem_alloc(enum mem_pool_type mem_type, unsigned int size)
     uint8_t *ptr = NULL;
 
 #if defined(__ADSPSHARC__)
-    REQUIRE(MEM_ALLOC_ALIGN == 8);
+    REQUIRE(MEM_ALLOC_ALIGN == 64);
 #endif
 
     if (mem_type < MEM_TYPE_NUM)
