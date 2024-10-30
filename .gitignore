@@ -1,6 +1,9 @@
 # Build directories
 build*/
 
+# Plots
+results/plots
+
 # MCU Xpresso SDK
 mcuxsdk
 
