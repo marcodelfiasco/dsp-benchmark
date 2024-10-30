@@ -115,20 +115,36 @@ static void _test_failed()
     _test_data.failed = true;
 }
 
+static void _test_tp_pulses(void)
+{
+    // Generate 10 pulses of 100000 NOPs each (each pulse is ~100uS @ 1GHz)
+    for (int pulse = 0; pulse < 10; pulse++)
+    {
+        tp0_set();
+        tp1_clr();
+        for (int loop = 0; loop < 1000; loop++)
+        {
+            NOP_100();
+        }
+        tp0_clr();
+        tp1_set();
+        for (int loop = 0; loop < 1000; loop++)
+        {
+            NOP_100();
+        }
+    }
+}
+
 static void _test_nop_100(void)
 {
     _test_begin("100 NOP", 0, 0);
 
-    tp0_set();
     for (int loop = 0; loop < 10000; loop++)
     {
-        tp1_set();
         measure_start(&_test_data.meas);
         NOP_100();
         measure_stop(&_test_data.meas);
-        tp1_clr();
     }
-    tp0_clr();
 
     _test_end();
 }
@@ -137,10 +153,8 @@ static void _test_nop_1000(void)
 {
     _test_begin("1000 NOP", 0, 0);
 
-    tp0_set();
     for (int loop = 0; loop < 10000; loop++)
     {
-        tp1_set();
         measure_start(&_test_data.meas);
         NOP_100();
         NOP_100();
@@ -153,9 +167,7 @@ static void _test_nop_1000(void)
         NOP_100();
         NOP_100();
         measure_stop(&_test_data.meas);
-        tp1_clr();
     }
-    tp0_clr();
 
     _test_end();
 }
@@ -349,6 +361,7 @@ void test_run(void)
 {
     _print_test_result_header();
 
+    _test_tp_pulses();
     _test_nop_100();
     _test_nop_1000();
 

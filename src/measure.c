@@ -37,7 +37,7 @@ void measure_reset(struct measure_t *data)
 #ifdef __ADSPSHARC__
 #pragma never_inline
 #endif
-void measure_start(struct measure_t *data)
+void __attribute__((noinline)) measure_start(struct measure_t *data)
 {
     uint64_t initial_ts = get_timestamp();
     uint64_t ts;
@@ -54,7 +54,7 @@ void measure_start(struct measure_t *data)
 #ifdef __ADSPSHARC__
 #pragma never_inline
 #endif
-void measure_stop(struct measure_t *data)
+void __attribute__((noinline)) measure_stop(struct measure_t *data)
 {
     uint64_t period;
 
