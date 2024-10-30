@@ -45,7 +45,7 @@ static void _print_test_result_header(void)
             "min_cycles,max_cycles,avg_cycles,"
             "min_nsec,max_nsec,avg_nsec,"
             "min_mac_per_cycle,max_mac_per_cycle,avg_mac_per_cycle,"
-            "min_mac_per_nanosec,max_mac_per_nanosec,avg_mac_per_nanosec\n");
+            "min_mac_per_nsec,max_mac_per_nsec,avg_mac_per_nsec\n");
 }
 
 static void _print_test_results(void)

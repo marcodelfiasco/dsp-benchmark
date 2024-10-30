@@ -1,4 +1,4 @@
-name,fir_size,buffer_size,mac,result,max_error_e6,count,min_cycles,max_cycles,avg_cycles,min_nsec,max_nsec,avg_nsec,min_mac_per_cycle,max_mac_per_cycle,avg_mac_per_cycle,min_mac_per_nanosec,max_mac_per_nanosec,avg_mac_per_nanosec
+name,fir_size,buffer_size,mac,result,max_error_e6,count,min_cycles,max_cycles,avg_cycles,min_nsec,max_nsec,avg_nsec,min_mac_per_cycle,max_mac_per_cycle,avg_mac_per_cycle,min_mac_per_nsec,max_mac_per_nsec,avg_mac_per_nsec
 100 NOP,0,0,0,OK,0e-6,9999.000000,114.000000,119.000000,114.000000,114.000000,119.000000,114.000000,0,0,0,0,0,0
 1000 NOP,0,0,0,OK,0e-6,9999.000000,1007.000000,1012.000000,1007.000000,1011.000000,1016.000000,1011.000000,0,0,0,0,0,0
 FIR.basic_ddr,16,8,128,OK,0.834465e-6,1023.000000,1226.000000,1233.000000,1226.000000,1231.000000,1238.000000,1231.000000,0.103812,0.104405,0.104405,0.103393,0.103981,0.103981

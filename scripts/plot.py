@@ -7,7 +7,7 @@ OUTPUT_DIR = 'results/plots'
 FIR_SIZES = (16, 32, 64, 128, 256, 512, 1024, 2048, 4096)
 BUFFER_SIZES = (8, 16, 32, 64, 128)
 TIME_COLS = ('min_nsec', 'avg_nsec', 'max_nsec')  # preserve min, avg, max ordering!
-NMAC_COLS = ('min_mac_per_nanosec', 'avg_mac_per_nanosec', 'max_mac_per_nanosec')  # preserve min, avg, max ordering!
+NMAC_COLS = ('min_mac_per_nsec', 'avg_mac_per_nsec', 'max_mac_per_nsec')  # preserve min, avg, max ordering!
 FONT_SIZE = 12
 FIG_SIZE = (11.69, 8.27)
 FIG_DPI = 300
@@ -217,9 +217,9 @@ def main():
 
     for buffer_size in BUFFER_SIZES:
         # To see which version is best for each architecture
-        plot_compare_one_arch(dataframes, 'results/adsp.csv',  COMPARE_ONE_ADSP,  buffer_size, FIR_SIZES, 'avg_mac_per_nanosec', 'MAC/nsec', f'01-adsp-variants-{buffer_size}')
-        plot_compare_one_arch(dataframes, 'results/imxrt.csv', COMPARE_ONE_IMXRT, buffer_size, FIR_SIZES, 'avg_mac_per_nanosec', 'MAC/nsec', f'02-imxrt-variants-{buffer_size}')
-        plot_compare_one_arch(dataframes, 'results/rpi4.csv',  COMPARE_ONE_RPI4,  buffer_size, FIR_SIZES, 'avg_mac_per_nanosec', 'MAC/nsec', f'03-rpi4-variants-{buffer_size}')
+        plot_compare_one_arch(dataframes, 'results/adsp.csv',  COMPARE_ONE_ADSP,  buffer_size, FIR_SIZES, 'avg_mac_per_nsec', 'MAC/nsec', f'01-adsp-variants-{buffer_size}')
+        plot_compare_one_arch(dataframes, 'results/imxrt.csv', COMPARE_ONE_IMXRT, buffer_size, FIR_SIZES, 'avg_mac_per_nsec', 'MAC/nsec', f'02-imxrt-variants-{buffer_size}')
+        plot_compare_one_arch(dataframes, 'results/rpi4.csv',  COMPARE_ONE_RPI4,  buffer_size, FIR_SIZES, 'avg_mac_per_nsec', 'MAC/nsec', f'03-rpi4-variants-{buffer_size}')
 
         # To see how the naive basic implementation behaves among different targets
         plot_compare_multiple_arch(dataframes, COMPARE_MULTI_BASIC, buffer_size, FIR_SIZES, TIME_COLS, 'nsec',     f'04-basic-time-{buffer_size}')
