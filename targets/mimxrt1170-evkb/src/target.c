@@ -4,17 +4,37 @@
 #include "fsl_common.h"
 #include "fsl_clock.h"
 #include "fsl_debug_console.h"
+#include "fsl_iomuxc.h"
 #include "clock_config.h"
 #include "board.h"
 #include "macro.h"
 
 extern void tp_init(void);
 
+static void _init_pins(void)
+{
+    CLOCK_EnableClock(kCLOCK_Iomuxc);
+    CLOCK_EnableClock(kCLOCK_Iomuxc_Lpsr);
+
+    // GPIOs
+    IOMUXC_SetPinMux(IOMUXC_GPIO_AD_04_GPIO9_IO03, 0u);
+    IOMUXC_SetPinConfig(IOMUXC_GPIO_AD_04_GPIO9_IO03, 0x02u);
+
+    IOMUXC_SetPinMux(IOMUXC_GPIO_AD_26_GPIO9_IO25, 0u);
+    IOMUXC_SetPinConfig(IOMUXC_GPIO_AD_26_GPIO9_IO25, 0x02u);
+
+    // Trace
+    IOMUXC_SetPinMux(IOMUXC_GPIO_LPSR_11_ARM_TRACE_SWO, 0u);
+    IOMUXC_SetPinConfig(IOMUXC_GPIO_LPSR_11_ARM_TRACE_SWO, 0x02u);
+}
+
 void target_init(void)
 {
     BOARD_ConfigMPU();
-    BOARD_InitBootClocks();
+    _init_pins();
+    BOARD_BootClockRUN();
     BOARD_InitDebugConsole();
+    SystemCoreClockUpdate();
 
     tp_init();
 
