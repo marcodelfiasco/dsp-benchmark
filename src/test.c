@@ -23,6 +23,8 @@
 #include "rpi/fir_cmsis.h"
 #endif
 
+extern void test_sleep(void);
+
 #define MAX_INPUT_LEN 8192
 #define MAX_OUTPUT_LEN 8192
 static AUDIO_BUFFER_SECTION float _test_input_buffer[MAX_INPUT_LEN];
@@ -211,6 +213,7 @@ static void _test_nop_1000(void)
         for (int processed = 0; processed < get_input_length();                \
              processed += buffer_size)                                         \
         {                                                                      \
+            test_sleep();                                                    \
             mem_cache_thrash(cache_thrash_lines);                              \
             measure_start(&_test_data.meas);                                   \
             run_func(&fir_data, input, output, buffer_size);                   \

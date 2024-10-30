@@ -96,3 +96,8 @@ uint64_t timestamp_to_cycles(uint64_t timestamp)
 {
     return (uint64_t)(0.5 + timestamp * (double)CPU_FREQ / 1.0E9);
 }
+
+void test_sleep(void)
+{
+    evl_usleep(250);
+}

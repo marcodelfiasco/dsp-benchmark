@@ -5,8 +5,8 @@
 #include <limits.h>
 
 extern uint64_t get_timestamp(void);
-uint64_t timestamp_to_nsec(uint64_t timestamp);
-uint64_t timestamp_to_cycles(uint64_t timestamp);
+extern uint64_t timestamp_to_nsec(uint64_t timestamp);
+extern uint64_t timestamp_to_cycles(uint64_t timestamp);
 
 static void _reset(struct measure_t *data, uint64_t overhead)
 {

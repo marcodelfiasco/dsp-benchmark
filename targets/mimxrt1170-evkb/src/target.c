@@ -59,3 +59,8 @@ uint64_t timestamp_to_cycles(uint64_t timestamp)
     // Timestamp is already in cycles
     return timestamp;
 }
+
+void test_sleep(void)
+{
+    // Sleep not needed
+}
