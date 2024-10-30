@@ -2,7 +2,7 @@
 build*/
 
 # Plots
-results/plots
+results/plots*
 
 # MCU Xpresso SDK
 mcuxsdk
