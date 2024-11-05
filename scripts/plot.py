@@ -100,7 +100,7 @@ def plot_compare_multiple_arch(dataframes, test_names, buffer_size, fir_sizes, c
     plt.tight_layout()
 
     os.makedirs(OUTPUT_DIR, exist_ok=True)
-    plt.savefig(f'{OUTPUT_DIR}/{output_file}.pdf', bbox_inches='tight')
+    plt.savefig(f'{OUTPUT_DIR}/{output_file}.png', format='png', bbox_inches='tight')
     plt.close()
 
 
@@ -156,7 +156,7 @@ def plot_compare_one_arch(dataframes, file, test_names, buffer_size, fir_sizes, 
     plt.tight_layout()
 
     os.makedirs(OUTPUT_DIR, exist_ok=True)
-    plt.savefig(f'{OUTPUT_DIR}/{output_file}.pdf', bbox_inches='tight')
+    plt.savefig(f'{OUTPUT_DIR}/{output_file}.png', format='png', bbox_inches='tight')
     plt.close()
 
 
@@ -173,6 +173,7 @@ def main():
         'FIR.circular_opt',
         'FIR.lib',
     ]
+
     COMPARE_ONE_IMXRT = [
         'FIR.basic_tcm',
         'FIR.basic_tcm_restrict',
@@ -182,6 +183,7 @@ def main():
         'FIR.opt_tcm',
         'FIR.cmsis_tcm',
     ]
+
     COMPARE_ONE_RPI4 = [
         'FIR.basic',
         'FIR.basic_restrict',
@@ -191,22 +193,10 @@ def main():
         'FIR.cmsis',
     ]
 
-    COMPARE_MULTI_BASIC = [
-        'FIR.basic_tcm',    #imxrt
-        'FIR.basic',        #rpi
-        'FIR.basic'         #adsp
-    ]
-
     COMPARE_MULTI_BEST = [
         'FIR.cmsis_tcm',    #imxrt
         'FIR.opt',          #rpi
         'FIR.lib'           #adsp
-    ]
-
-    COMPARE_MULTI_BASIC_CACHE_THRASH = [
-        'FIR.basic_ddr_cache_thrash',   #imxrt
-        'FIR.basic_cache_thrash',       #rpi
-        'FIR.basic'                     #adsp
     ]
 
     COMPARE_MULTI_BEST_CACHE_THRASH = [
@@ -217,28 +207,17 @@ def main():
 
     for buffer_size in BUFFER_SIZES:
         # To see which version is best for each architecture
-        plot_compare_one_arch(dataframes, 'results/adsp.csv',  COMPARE_ONE_ADSP,  buffer_size, FIR_SIZES, 'avg_mac_per_nsec', 'MAC/nsec', f'01-adsp-variants-{buffer_size}')
-        plot_compare_one_arch(dataframes, 'results/imxrt.csv', COMPARE_ONE_IMXRT, buffer_size, FIR_SIZES, 'avg_mac_per_nsec', 'MAC/nsec', f'02-imxrt-variants-{buffer_size}')
-        plot_compare_one_arch(dataframes, 'results/rpi4.csv',  COMPARE_ONE_RPI4,  buffer_size, FIR_SIZES, 'avg_mac_per_nsec', 'MAC/nsec', f'03-rpi4-variants-{buffer_size}')
-
-        # To see how the naive basic implementation behaves among different targets
-        plot_compare_multiple_arch(dataframes, COMPARE_MULTI_BASIC, buffer_size, FIR_SIZES, TIME_COLS, 'nsec',     f'04-basic-time-{buffer_size}')
-        plot_compare_multiple_arch(dataframes, COMPARE_MULTI_BASIC, buffer_size, FIR_SIZES, NMAC_COLS, 'MAC/nsec', f'05-basic-norm-mac-{buffer_size}')
+        plot_compare_one_arch(dataframes, 'results/adsp.csv',  COMPARE_ONE_ADSP,  buffer_size, FIR_SIZES, 'avg_mac_per_cycle', 'MAC/nsec', f'adsp-variants-{buffer_size}')
+        plot_compare_one_arch(dataframes, 'results/imxrt.csv', COMPARE_ONE_IMXRT, buffer_size, FIR_SIZES, 'avg_mac_per_cycle', 'MAC/nsec', f'imxrt-variants-{buffer_size}')
+        plot_compare_one_arch(dataframes, 'results/rpi4.csv',  COMPARE_ONE_RPI4,  buffer_size, FIR_SIZES, 'avg_mac_per_cycle', 'MAC/nsec', f'rpi4-variants-{buffer_size}')
 
         # To see how the best implementation behaves among different targets
         # warning: COMPARE_MULTI_BEST must be set pointing to the best test names!
-        plot_compare_multiple_arch(dataframes, COMPARE_MULTI_BEST, buffer_size, FIR_SIZES, TIME_COLS, 'nsec',     f'06-best-time-{buffer_size}')
-        plot_compare_multiple_arch(dataframes, COMPARE_MULTI_BEST, buffer_size, FIR_SIZES, NMAC_COLS, 'MAC/nsec', f'07-best-norm-mac-{buffer_size}')
-
-        # To compare the effect of cache thrashing among different architectures (imxrt using ddr for this test, adsp still running from internal memory but there for reference)
-        # warning: COMPARE_MULTI_BASIC_CACHE_THRASH must be set pointing to the best test names!
-        plot_compare_multiple_arch(dataframes, COMPARE_MULTI_BASIC_CACHE_THRASH, buffer_size, FIR_SIZES, TIME_COLS, 'nsec',     f'08-basic_cache_thrash-time-{buffer_size}')
-        plot_compare_multiple_arch(dataframes, COMPARE_MULTI_BASIC_CACHE_THRASH, buffer_size, FIR_SIZES, NMAC_COLS, 'MAC/nsec', f'09-basic_cache_thrash-norm-mac-{buffer_size}')
+        plot_compare_multiple_arch(dataframes, COMPARE_MULTI_BEST, buffer_size, FIR_SIZES, NMAC_COLS, 'MAC/nsec', f'best-norm-{buffer_size}')
 
         # To compare the effect of cache thrashing among different architectures (imxrt using ddr for this test, adsp still running from internal memory but there for reference)
         # warning: COMPARE_MULTI_BEST_CACHE_THRASH must be set pointing to the best test names!
-        plot_compare_multiple_arch(dataframes, COMPARE_MULTI_BEST_CACHE_THRASH, buffer_size, FIR_SIZES, TIME_COLS, 'nsec',     f'10-best_cache_thrash-time-{buffer_size}')
-        plot_compare_multiple_arch(dataframes, COMPARE_MULTI_BEST_CACHE_THRASH, buffer_size, FIR_SIZES, NMAC_COLS, 'MAC/nsec', f'11-best_cache_thrash-norm-mac-{buffer_size}')
+        plot_compare_multiple_arch(dataframes, COMPARE_MULTI_BEST_CACHE_THRASH, buffer_size, FIR_SIZES, NMAC_COLS, 'MAC/nsec', f'best-norm-cthrash-{buffer_size}')
         
 if __name__ == '__main__':
     main()
