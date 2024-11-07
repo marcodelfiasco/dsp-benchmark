@@ -193,6 +193,12 @@ def main():
         'FIR.cmsis',
     ]
 
+    COMPARE_MULTI_BASIC = [
+        'FIR.basic_tcm',    #imxrt
+        'FIR.basic',        #rpi
+        'FIR.basic'         #adsp
+    ]
+
     COMPARE_MULTI_BEST = [
         'FIR.cmsis_tcm',    #imxrt
         'FIR.opt',          #rpi
@@ -210,6 +216,9 @@ def main():
         plot_compare_one_arch(dataframes, 'results/adsp.csv',  COMPARE_ONE_ADSP,  buffer_size, FIR_SIZES, 'avg_mac_per_cycle', 'MAC/cycle', f'adsp-variants-{buffer_size}')
         plot_compare_one_arch(dataframes, 'results/imxrt.csv', COMPARE_ONE_IMXRT, buffer_size, FIR_SIZES, 'avg_mac_per_cycle', 'MAC/cycle', f'imxrt-variants-{buffer_size}')
         plot_compare_one_arch(dataframes, 'results/rpi4.csv',  COMPARE_ONE_RPI4,  buffer_size, FIR_SIZES, 'avg_mac_per_cycle', 'MAC/cycle', f'rpi4-variants-{buffer_size}')
+
+        # To see how the basic implementation behaves among different targets
+        plot_compare_multiple_arch(dataframes, COMPARE_MULTI_BASIC, buffer_size, FIR_SIZES, NMAC_COLS, 'MAC/nsec', f'basic-norm-{buffer_size}')
 
         # To see how the best implementation behaves among different targets
         # warning: COMPARE_MULTI_BEST must be set pointing to the best test names!
