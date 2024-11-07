@@ -25,8 +25,10 @@
 
 extern void test_sleep(void);
 
-#define MAX_INPUT_LEN 8192
-#define MAX_OUTPUT_LEN 8192
+#define FIR_TEST_TOTAL_LEN 48000 // the total length of each test
+
+#define MAX_INPUT_LEN 20480 // same as test_vectors.c::INPUT_VECTOR_LEN
+#define MAX_OUTPUT_LEN 20480 // same as test_vectors.c::INPUT_VECTOR_LEN
 static AUDIO_BUFFER_SECTION float _test_input_buffer[MAX_INPUT_LEN];
 static AUDIO_BUFFER_SECTION float _test_output_buffer[MAX_OUTPUT_LEN];
 static int _test_buffer_size[] = { 8, 16, 32, 64, 128 };
@@ -203,23 +205,30 @@ static void _test_nop_1000(void)
 #define FIR_RUNNER(name, fir_data_t, init_func, run_func, cache_thrash_lines)  \
     {                                                                          \
         int buffer_size = _test_buffer_size[bsize_idx];                        \
-        const float *input = _test_input_buffer;                               \
-        float *output = _test_output_buffer;                                   \
         fir_data_t fir_data;                                                   \
+        int processed_total;                                                   \
+        int processed_inner_loop;                                              \
                                                                                \
         _test_begin(name, get_fir_length(fir_idx), buffer_size);               \
         init_func(&fir_data, get_fir_coeffs(fir_idx), get_fir_length(fir_idx), \
                   buffer_size);                                                \
-        for (int processed = 0; processed < get_input_length();                \
-             processed += buffer_size)                                         \
+        for (processed_total = 0; processed_total < FIR_TEST_TOTAL_LEN;        \
+             processed_total += processed_inner_loop)                          \
         {                                                                      \
-            test_sleep();                                                    \
-            mem_cache_thrash(cache_thrash_lines);                              \
-            measure_start(&_test_data.meas);                                   \
-            run_func(&fir_data, input, output, buffer_size);                   \
-            measure_stop(&_test_data.meas);                                    \
-            input += buffer_size;                                              \
-            output += buffer_size;                                             \
+            const float *input = _test_input_buffer;                           \
+            float *output = _test_output_buffer;                               \
+            for (processed_inner_loop = 0;                                     \
+                 (processed_inner_loop + buffer_size) < get_input_length();    \
+                 processed_inner_loop += buffer_size)                          \
+            {                                                                  \
+                test_sleep();                                                  \
+                mem_cache_thrash(cache_thrash_lines);                          \
+                measure_start(&_test_data.meas);                               \
+                run_func(&fir_data, input, output, buffer_size);               \
+                measure_stop(&_test_data.meas);                                \
+                input += buffer_size;                                          \
+                output += buffer_size;                                         \
+            }                                                                  \
         }                                                                      \
                                                                                \
         if (!compare_float_buffer(_test_output_buffer, get_output(fir_idx),    \

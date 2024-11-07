@@ -29,9 +29,11 @@ end
 % Filter lengths
 fir_len = [ 16, 32, 64, 128, 256, 512, 1024, 2048, 4096 ];
 
-% Generate random input
-randn('seed', 0);
-input_signal = single([randn(max(fir_len), 1); zeros(max(fir_len), 1)]);
+% Generate input signal
+% NOTE: ensure enough zeros are present at the end because the input signal is looped on the target to have an higher test duration
+dirac_input = [1; zeros(2 * max(fir_len) - 1, 1)];
+step_input = [ones(max(fir_len), 1); zeros(2 * max(fir_len), 1)];
+input_signal = single([dirac_input; step_input]);
 
 % Write header file
 fh = fopen( 'src/test_vectors.h', 'w' );
