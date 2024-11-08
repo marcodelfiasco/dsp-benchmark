@@ -30,9 +30,9 @@
 #define MASK(n) (BIT(n) - 1)
 
 #ifdef CPU_MIMXRT1176DVMAA_cm7
-#define MACH_NOP() asm("nop; nop;") // CM7 will dual issue NOPs
+    #define MACH_NOP() asm("nop; nop;") // CM7 will dual issue NOPs
 #else
-#define MACH_NOP() asm("nop;")
+    #define MACH_NOP() asm("nop;")
 #endif
 
 #define NOP_10()    \
@@ -65,14 +65,14 @@
     } while (0)
 
 #if defined(__ADSPSHARC__)
-#define AUDIO_BUFFER_SECTION dm
-#define TEST_CONST_SECTION
+    #define AUDIO_BUFFER_SECTION dm
+    #define TEST_CONST_SECTION
 #elif defined(CPU_MIMXRT1176DVMAA_cm7)
-#define AUDIO_BUFFER_SECTION __attribute__((section("DataQuickAccess")))
-#define TEST_CONST_SECTION __attribute__((section("TestVectorConst")))
+    #define AUDIO_BUFFER_SECTION __attribute__((section("DataQuickAccess")))
+    #define TEST_CONST_SECTION __attribute__((section("TestVectorConst")))
 #else
-#define AUDIO_BUFFER_SECTION
-#define TEST_CONST_SECTION
+    #define AUDIO_BUFFER_SECTION
+    #define TEST_CONST_SECTION
 #endif
 
 #endif /* MACRO_H_ */

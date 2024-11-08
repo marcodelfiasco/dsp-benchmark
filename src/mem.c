@@ -11,9 +11,9 @@
 
 #define CACHE_SIZE 32768
 #if defined(CPU_MIMXRT1176DVMAA_cm7)
-#define CACHE_LINE_SIZE 32
+    #define CACHE_LINE_SIZE 32
 #else
-#define CACHE_LINE_SIZE 64
+    #define CACHE_LINE_SIZE 64
 // Note: ADSP does not have cache enabled, using this value for convenience only
 #endif
 

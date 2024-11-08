@@ -35,7 +35,7 @@ void measure_reset(struct measure_t *data)
 }
 
 #ifdef __ADSPSHARC__
-#pragma never_inline
+    #pragma never_inline
 #endif
 void __attribute__((noinline)) measure_start(struct measure_t *data)
 {
@@ -52,7 +52,7 @@ void __attribute__((noinline)) measure_start(struct measure_t *data)
 }
 
 #ifdef __ADSPSHARC__
-#pragma never_inline
+    #pragma never_inline
 #endif
 void __attribute__((noinline)) measure_stop(struct measure_t *data)
 {

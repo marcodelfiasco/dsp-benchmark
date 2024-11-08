@@ -8,19 +8,19 @@
 #include "utils.h"
 #include "test_vectors.h"
 #if defined(__ADSPSHARC__)
-#include "adsp/fir_basic.h"
-#include "adsp/fir_circular.h"
-#include "adsp/fir_lib.h"
+    #include "adsp/fir_basic.h"
+    #include "adsp/fir_circular.h"
+    #include "adsp/fir_lib.h"
 #elif defined(CPU_MIMXRT1176DVMAA_cm7)
-#include "imxrt/fir_basic.h"
-#include "imxrt/fir_circular.h"
-#include "imxrt/fir_opt.h"
-#include "imxrt/fir_cmsis.h"
+    #include "imxrt/fir_basic.h"
+    #include "imxrt/fir_circular.h"
+    #include "imxrt/fir_opt.h"
+    #include "imxrt/fir_cmsis.h"
 #else
-#include "rpi/fir_basic.h"
-#include "rpi/fir_circular.h"
-#include "rpi/fir_opt.h"
-#include "rpi/fir_cmsis.h"
+    #include "rpi/fir_basic.h"
+    #include "rpi/fir_circular.h"
+    #include "rpi/fir_opt.h"
+    #include "rpi/fir_cmsis.h"
 #endif
 
 extern void test_sleep(void);
