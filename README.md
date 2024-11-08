@@ -123,20 +123,6 @@ or just use scripts in the `scripts` directory.
 ### Run
 Execute `benchmark-rpi4` application.
 
-# Architecture notes
-## Cache
-### ADSP
-The cache for this processor is not enabled in the project.
-We will not collect cached memory data for SHARC since usually DSP applications run on internal memory only.
-
-### iMXRT
-L1: 32KB, 4 ways, 32B per line, 256 lines.
-L2: none
-
-### RPI4
-L1: 32KB, 2 ways, 64B per line, 256 lines.
-L2: 1024KB, 16 ways, 64B per line, 1024 lines.
-
 # Plots
 To generate plots run
 ```
